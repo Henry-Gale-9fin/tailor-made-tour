@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
-import { FeatureDetailModal } from "./FeatureDetailModal";
+import { SplitFeatureModal } from "./SplitFeatureModal";
 import { cn } from "@/lib/utils";
 
 interface FeatureExplorationProps {
@@ -125,7 +125,7 @@ export const FeatureExploration = ({
       </div>
 
       {/* Feature Detail Modal */}
-      <FeatureDetailModal
+      <SplitFeatureModal
         feature={selectedFeature}
         open={!!selectedFeature}
         onClose={() => setSelectedFeature(null)}
