@@ -24,31 +24,30 @@ export const OnboardingStep = ({
   onBack,
 }: OnboardingStepProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
-      <div className="w-full max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          {onBack ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onBack}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          ) : (
-            <div />
-          )}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
-              Step {currentStep} of {totalSteps}
-            </span>
-            <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
-          </div>
-        </div>
+    <div className="relative flex flex-col items-center justify-center min-h-screen p-8">
+      {/* Fixed Top-Left Back Button */}
+      {onBack && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-10"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      )}
 
+      {/* Fixed Top-Right Progress Indicator */}
+      <div className="fixed top-6 right-6 flex items-center gap-3 z-10">
+        <span className="text-sm text-muted-foreground">
+          Step {currentStep} of {totalSteps}
+        </span>
+        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+      </div>
+
+      {/* Centered Content */}
+      <div className="w-full max-w-4xl">
         {/* Question */}
         <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">{title}</h1>
 
