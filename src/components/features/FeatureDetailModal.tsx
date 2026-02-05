@@ -18,54 +18,67 @@ export const FeatureDetailModal = ({ feature, open, onClose }: FeatureDetailModa
         onClick={onClose}
       />
       
-      {/* Centered Dialog Modal */}
-      <div className="relative z-10 w-full max-w-xl bg-card border border-border/50 rounded-xl shadow-2xl overflow-hidden">
+      {/* Modal Container */}
+      <div 
+        className="relative z-10 bg-card border border-border/50 rounded-xl shadow-2xl overflow-hidden"
+        style={{ 
+          width: 'min(960px, 90vw)',
+          maxHeight: '80vh'
+        }}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-20 p-1.5 rounded-full bg-muted/80 hover:bg-muted transition-colors"
+          className="absolute top-4 right-4 z-20 p-1.5 rounded-full bg-muted/80 hover:bg-muted transition-colors"
           aria-label="Close modal"
         >
           <X className="w-4 h-4" />
         </button>
 
-        {/* Two-Column Layout: Text Left | Media Right */}
-        <div className="grid grid-cols-2 min-h-[280px]">
+        {/* 2-Column Grid: Text Left | Media Right */}
+        <div 
+          className="grid md:grid-cols-2 gap-6 p-6 overflow-y-auto"
+          style={{ 
+            maxHeight: '80vh',
+            alignItems: 'start'
+          }}
+        >
           {/* LEFT COLUMN: Text Content */}
-          <div className="p-5 flex flex-col justify-center border-r border-border/30">
+          <div className="flex flex-col order-1">
             {/* Clickable Title Link */}
             <a
               href={feature.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-lg font-semibold mb-2 hover:text-primary transition-colors inline-flex items-center gap-1.5 group"
+              className="text-xl font-semibold mb-3 hover:text-primary transition-colors inline-flex items-center gap-2 group"
             >
               {feature.name}
-              <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100" />
+              <ExternalLink className="w-4 h-4 opacity-60 group-hover:opacity-100" />
             </a>
             
             {/* Description */}
-            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+            <p className="text-muted-foreground mb-5 leading-relaxed">
               {feature.description}
             </p>
 
             {/* Value to Customer */}
-            <div className="pt-3 border-t border-border/30">
-              <h4 className="text-xs uppercase tracking-wider text-muted-foreground/80 mb-1.5">
+            <div className="pt-4 border-t border-border/30">
+              <h4 className="text-xs uppercase tracking-wider text-muted-foreground/80 mb-2">
                 Value to you
               </h4>
-              <p className="text-sm text-foreground leading-relaxed">
-                {feature.valueProp}
+              <p className="text-foreground leading-relaxed">
+                {feature.longDescription}
               </p>
             </div>
           </div>
 
           {/* RIGHT COLUMN: Media */}
-          <div className="bg-muted/20 flex items-center justify-center p-4">
+          <div className="order-2 md:order-2 bg-muted/20 rounded-lg overflow-hidden flex items-start justify-center">
             <img
               src={feature.image}
               alt={feature.name}
-              className="w-full h-auto max-h-[220px] object-contain rounded-md"
+              className="w-full h-full object-cover"
+              style={{ minHeight: '200px', maxHeight: '400px' }}
             />
           </div>
         </div>
