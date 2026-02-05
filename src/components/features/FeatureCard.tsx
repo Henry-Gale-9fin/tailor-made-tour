@@ -1,14 +1,12 @@
 import { Feature } from "@/data/features";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface FeatureCardProps {
   feature: Feature;
-  onFeedback: (feedback: "Used" | "Seen" | "Unknown") => void;
-  onExplore: () => void;
+  onOpenModal: () => void;
 }
 
-export const FeatureCard = ({ feature, onFeedback, onExplore }: FeatureCardProps) => {
+export const FeatureCard = ({ feature, onOpenModal }: FeatureCardProps) => {
   return (
     <Card className="w-full max-w-2xl mx-auto border-border/50 bg-card/80 backdrop-blur-sm">
       <CardContent className="p-0">
@@ -23,43 +21,15 @@ export const FeatureCard = ({ feature, onFeedback, onExplore }: FeatureCardProps
 
         {/* Content */}
         <div className="p-6">
-          <h2 className="text-2xl font-bold mb-2">{feature.name}</h2>
-          <p className="text-muted-foreground mb-4">{feature.description}</p>
-          <p className="text-sm text-primary mb-6">{feature.valueProp}</p>
-
-          {/* Explore button */}
-          <Button
-            variant="outline"
-            onClick={onExplore}
-            className="w-full mb-6"
+          {/* Clickable Title */}
+          <button
+            onClick={onOpenModal}
+            className="text-2xl font-bold mb-2 text-left hover:text-primary transition-colors cursor-pointer"
           >
-            Explore
-          </Button>
-
-          {/* Feedback buttons */}
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => onFeedback("Used")}
-            >
-              Used
-            </Button>
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => onFeedback("Seen")}
-            >
-              Seen
-            </Button>
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => onFeedback("Unknown")}
-            >
-              Unknown
-            </Button>
-          </div>
+            {feature.name}
+          </button>
+          <p className="text-muted-foreground mb-4">{feature.description}</p>
+          <p className="text-sm text-primary">{feature.valueProp}</p>
         </div>
       </CardContent>
     </Card>
