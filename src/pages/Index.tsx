@@ -111,8 +111,8 @@ const Index = () => {
         <CompletionScreen onRestart={handleRestart} />
       )}
 
-      {/* Selection Summary Panel */}
-      {currentStep !== "complete" && (
+      {/* Selection Summary Panel - only during onboarding steps */}
+      {currentStep !== "complete" && currentStep !== "features" && (
         <SelectionSummary
           state={state}
           onClearFirmType={clearFirmType}
