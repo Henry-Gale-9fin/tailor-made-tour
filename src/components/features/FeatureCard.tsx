@@ -41,10 +41,17 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Description + Use Case */}
-          <div className="flex flex-col gap-4">
-            {/* Description Block (order-3 on mobile) */}
-            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-3 md:order-none">
+          {/* RIGHT COLUMN: Value → Description → Use Case */}
+          <div className="flex flex-col gap-4 md:pl-2 md:pr-2">
+            {/* Primary Value Statement (TOP) */}
+            <div className="bg-primary/10 rounded-lg p-5 border border-primary/20 order-3 md:order-none">
+              <p className="text-primary text-base font-semibold leading-relaxed">
+                {feature.valueProp}
+              </p>
+            </div>
+
+            {/* Description Block */}
+            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-4 md:order-none">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                 Description
               </h4>
@@ -53,20 +60,13 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
               </p>
             </div>
 
-            {/* Use Case Block (order-4 on mobile) */}
-            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-4 md:order-none">
+            {/* Use Case Block */}
+            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-5 md:order-none">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                 Use Case
               </h4>
               <p className="text-foreground text-sm leading-relaxed">
                 {feature.longDescription}
-              </p>
-            </div>
-
-            {/* Value Prop Highlight */}
-            <div className="bg-primary/10 rounded-lg p-4 border border-primary/20 order-5 md:order-none">
-              <p className="text-primary text-sm font-medium">
-                {feature.valueProp}
               </p>
             </div>
           </div>
