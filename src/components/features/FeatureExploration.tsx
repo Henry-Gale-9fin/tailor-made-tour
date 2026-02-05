@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
-import { SplitFeatureModal } from "./SplitFeatureModal";
 import { cn } from "@/lib/utils";
 
 interface FeatureExplorationProps {
@@ -22,7 +21,6 @@ export const FeatureExploration = ({
   onComplete,
 }: FeatureExplorationProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   const reviewedCount = Object.keys(featureFeedback).filter(id =>
     features.some(f => f.id === id)
@@ -70,33 +68,30 @@ export const FeatureExploration = ({
         </p>
       </div>
 
-      {/* Feature Card */}
+      {/* Feature Card - Split Layout */}
       <div className="flex-1 flex items-center justify-center">
-        <FeatureCard
-          feature={currentFeature}
-          onOpenModal={() => setSelectedFeature(currentFeature)}
-        />
+        <FeatureCard feature={currentFeature} />
       </div>
 
-      {/* Feedback Buttons - Always visible below card area */}
-      <div className="flex justify-center gap-3 mt-6 mb-4">
+      {/* Used / Seen / Unknown Buttons - OUTSIDE the card, centered below */}
+      <div className="flex justify-center gap-3 mt-8 mb-4">
         <Button
           variant="secondary"
-          className="min-w-24"
+          className="min-w-28"
           onClick={() => handleFeedback("Used")}
         >
           Used
         </Button>
         <Button
           variant="secondary"
-          className="min-w-24"
+          className="min-w-28"
           onClick={() => handleFeedback("Seen")}
         >
           Seen
         </Button>
         <Button
           variant="secondary"
-          className="min-w-24"
+          className="min-w-28"
           onClick={() => handleFeedback("Unknown")}
         >
           Unknown
@@ -123,13 +118,6 @@ export const FeatureExploration = ({
           );
         })}
       </div>
-
-      {/* Feature Detail Modal */}
-      <SplitFeatureModal
-        feature={selectedFeature}
-        open={!!selectedFeature}
-        onClose={() => setSelectedFeature(null)}
-      />
     </div>
   );
 };
