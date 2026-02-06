@@ -10,7 +10,6 @@ interface FeatureExplorationProps {
   featureFeedback: Record<string, "Used" | "Seen" | "Unknown">;
   onFeedback: (featureId: string, feedback: "Used" | "Seen" | "Unknown") => void;
   onBack: () => void;
-  onComplete: () => void;
 }
 
 export const FeatureExploration = ({
@@ -18,7 +17,6 @@ export const FeatureExploration = ({
   featureFeedback,
   onFeedback,
   onBack,
-  onComplete,
 }: FeatureExplorationProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -31,10 +29,10 @@ export const FeatureExploration = ({
   const handleFeedback = (feedback: "Used" | "Seen" | "Unknown") => {
     onFeedback(currentFeature.id, feedback);
     
+    // Move to next feature if not the last one
+    // (auto-transition to loading is handled by parent when all features reviewed)
     if (currentIndex < features.length - 1) {
       setCurrentIndex(currentIndex + 1);
-    } else {
-      onComplete();
     }
   };
 
