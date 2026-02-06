@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Eye, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
-import { cn } from "@/lib/utils";
 
 interface FeatureExplorationProps {
   features: Feature[];
@@ -71,50 +70,40 @@ export const FeatureExploration = ({
         <FeatureCard feature={currentFeature} />
       </div>
 
-      {/* Used / Seen / Unknown Buttons - OUTSIDE the card, centered below */}
-      <div className="flex justify-center gap-3 mt-8 mb-4">
-        <Button
-          variant="secondary"
-          className="min-w-28"
+      {/* Feedback Buttons - Enhanced */}
+      <div className="flex justify-center gap-4 mt-8 mb-4">
+        <button
           onClick={() => handleFeedback("Used")}
+          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+                     border-2 border-success/30 bg-success/5 
+                     hover:border-success hover:bg-success/10 hover:scale-105
+                     active:scale-95 transition-all duration-200"
         >
-          Used
-        </Button>
-        <Button
-          variant="secondary"
-          className="min-w-28"
+          <Check className="w-6 h-6 text-success" />
+          <span className="font-semibold text-success">Used</span>
+        </button>
+        
+        <button
           onClick={() => handleFeedback("Seen")}
+          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+                     border-2 border-primary/30 bg-primary/5 
+                     hover:border-primary hover:bg-primary/10 hover:scale-105
+                     active:scale-95 transition-all duration-200"
         >
-          Seen
-        </Button>
-        <Button
-          variant="secondary"
-          className="min-w-28"
+          <Eye className="w-6 h-6 text-primary" />
+          <span className="font-semibold text-primary">Seen</span>
+        </button>
+        
+        <button
           onClick={() => handleFeedback("Unknown")}
+          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+                     border-2 border-muted-foreground/30 bg-muted/20 
+                     hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
+                     active:scale-95 transition-all duration-200"
         >
-          Unknown
-        </Button>
-      </div>
-
-      {/* Carousel Indicators */}
-      <div className="flex justify-center gap-2 mt-4">
-        {features.map((feature, index) => {
-          const hasFeedback = featureFeedback[feature.id];
-          return (
-            <button
-              key={feature.id}
-              onClick={() => goToFeature(index)}
-              className={cn(
-                "w-3 h-3 rounded-full transition-all duration-300",
-                index === currentIndex
-                  ? "bg-primary w-8"
-                  : hasFeedback
-                  ? "bg-success"
-                  : "bg-muted hover:bg-muted-foreground/50"
-              )}
-            />
-          );
-        })}
+          <HelpCircle className="w-6 h-6 text-muted-foreground" />
+          <span className="font-semibold text-muted-foreground">Unknown</span>
+        </button>
       </div>
     </div>
   );
