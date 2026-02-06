@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Check, Eye, HelpCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
@@ -74,35 +74,32 @@ export const FeatureExploration = ({
       <div className="flex justify-center gap-4 mt-8 mb-4">
         <button
           onClick={() => handleFeedback("Used")}
-          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-                     border-2 border-success/30 bg-success/5 
+          className="w-32 py-4 rounded-xl font-semibold
+                     border-2 border-success/30 bg-success/5 text-success
                      hover:border-success hover:bg-success/10 hover:scale-105
                      active:scale-95 transition-all duration-200"
         >
-          <Check className="w-6 h-6 text-success" />
-          <span className="font-semibold text-success">Used</span>
+          Used
         </button>
         
         <button
           onClick={() => handleFeedback("Seen")}
-          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-                     border-2 border-primary/30 bg-primary/5 
+          className="w-32 py-4 rounded-xl font-semibold
+                     border-2 border-primary/30 bg-primary/5 text-primary
                      hover:border-primary hover:bg-primary/10 hover:scale-105
                      active:scale-95 transition-all duration-200"
         >
-          <Eye className="w-6 h-6 text-primary" />
-          <span className="font-semibold text-primary">Seen</span>
+          Seen
         </button>
         
         <button
           onClick={() => handleFeedback("Unknown")}
-          className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-                     border-2 border-muted-foreground/30 bg-muted/20 
+          className="w-32 py-4 rounded-xl font-semibold
+                     border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
                      hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
                      active:scale-95 transition-all duration-200"
         >
-          <HelpCircle className="w-6 h-6 text-muted-foreground" />
-          <span className="font-semibold text-muted-foreground">Unknown</span>
+          Unknown
         </button>
       </div>
     </div>
