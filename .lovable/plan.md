@@ -1,125 +1,92 @@
 
 
-## Product Personalisation Prototype
+# Enhance Feedback Buttons & Remove Progress Dots
 
-A guided, premium onboarding experience that personalises feature recommendations based on user profile.
+## Summary
+Redesign the "Used / Seen / Unknown" buttons to be more visually engaging with clearer interaction feedback, and remove the carousel indicator dots below them.
 
----
+## Changes
 
-### Step 1: Firm Type Selection
+### 1. Remove Carousel Progress Indicator
+Delete the entire carousel indicators section (lines 99-118 in `FeatureExploration.tsx`). The progress is already shown in the top-right corner as "X of Y features reviewed", so the dots are redundant.
 
-**Screen:** Full-screen dark themed layout with horizontal chip/card selector
+### 2. Redesign Feedback Buttons
+Transform the buttons from plain secondary buttons into more prominent, visually distinct action cards:
 
-**Content:**
-- Header: "What type of firm do you work for?"
-- Step indicator: "Step 1 of 3"
-- Selection chips arranged in horizontal rows with icons and labels:
-  - Markets, Banks, Buyside, Law firms, Advisors
+**Visual Design:**
+- Larger touch targets with generous padding (py-4 px-6)
+- Rounded corners (rounded-xl) for a softer, more modern feel
+- Border styling that responds to hover
 
-**Behavior:**
-- Clicking a chip stores `firm_type` in local storage
-- Auto-advances to Step 2
+**Hover & Active States:**
+- On hover: subtle glow effect, border color intensifies, slight scale-up
+- On click: brief "pressed" animation (scale down then up)
+- After click: visual confirmation before transitioning (brief checkmark flash or color pulse)
 
----
+### 3. Add Click Feedback Animation
+When a user clicks any feedback button:
+- Brief visual pulse or checkmark overlay to confirm the action registered
+- Smooth transition to the next feature card
 
-### Step 2: Seniority Selection
+## Technical Details
 
-**Screen:** Same layout as Step 1
+**File: `src/components/features/FeatureExploration.tsx`**
 
-**Content:**
-- Header: "What seniority are you?"
-- Step indicator: "Step 2 of 3"
-- Dynamic chip options based on firm type:
-  - **Markets/Banks**: Analyst, Associate, Vice President, Director, Managing Director
-  - **Buyside**: Analyst, Associate, Vice President/Principal, Director, Partner/Portfolio Manager
-  - **Law firms**: Trainee/Junior Associate, Associate, Senior Associate, Counsel, Partner
-  - **Advisors**: Analyst, Associate, Vice President, Director, Partner
+1. Remove the carousel indicators `<div>` block (lines 99-118)
+2. Replace the button group with enhanced styled buttons:
 
-**Behavior:**
-- Stores `seniority` in local storage
-- Auto-advances to Step 3
+```tsx
+{/* Feedback Buttons - Enhanced */}
+<div className="flex justify-center gap-4 mt-8 mb-4">
+  <button
+    onClick={() => handleFeedback("Used")}
+    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+               border-2 border-success/30 bg-success/5 
+               hover:border-success hover:bg-success/10 hover:scale-105
+               active:scale-95 transition-all duration-200"
+  >
+    <Check className="w-6 h-6 text-success" />
+    <span className="font-semibold text-success">Used</span>
+  </button>
+  
+  <button
+    onClick={() => handleFeedback("Seen")}
+    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+               border-2 border-primary/30 bg-primary/5 
+               hover:border-primary hover:bg-primary/10 hover:scale-105
+               active:scale-95 transition-all duration-200"
+  >
+    <Eye className="w-6 h-6 text-primary" />
+    <span className="font-semibold text-primary">Seen</span>
+  </button>
+  
+  <button
+    onClick={() => handleFeedback("Unknown")}
+    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
+               border-2 border-muted-foreground/30 bg-muted/20 
+               hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
+               active:scale-95 transition-all duration-200"
+  >
+    <HelpCircle className="w-6 h-6 text-muted-foreground" />
+    <span className="font-semibold text-muted-foreground">Unknown</span>
+  </button>
+</div>
+```
 
----
+**Key styling features:**
+- Icons above text (vertical layout) for better scannability
+- Color-coded borders and text for instant recognition
+- `hover:scale-105` for lift effect on hover
+- `active:scale-95` for satisfying click feedback
+- Smooth `transition-all duration-200` for polished animations
 
-### Step 3: Usage/Intent Selection
+## Files Modified
+- `src/components/features/FeatureExploration.tsx`
 
-**Screen:** Same layout
-
-**Content:**
-- Header: "How often do you use the platform?"
-- Step indicator: "Step 3 of 3"
-- Chips: Daily, Weekly, Monthly, Yearly, Never
-
-**Behavior:**
-- Stores `usage` in local storage
-- Auto-advances to Feature Exploration
-
----
-
-### Shared Onboarding UI Elements
-
-- **Bottom-left panel:** Shows current selections (Firm, Seniority, Usage) with ability to clear individual selections or "Clear all"
-- **Step dots:** Visual indicator of progress (3 dots)
-- **Back button:** Navigate to previous step
-- **Dark theme:** Deep navy/blue background matching reference screenshots
-
----
-
-### Step 4: Feature Exploration (Carousel)
-
-**Screen:** "Explore Features" review experience
-
-**Content:**
-- Header: "Explore Features"
-- Subheader: "Tell us which features you use, have seen, or unknown"
-- 5 personalised features displayed one at a time in a card format:
-  - Feature title
-  - Short description
-  - Static placeholder image/visual
-  - Value proposition text
-
-**Feature Selection Logic:**
-- Static mapping of firm types to relevant features
-- Exactly 5 features shown per firm type
-
-**Interaction:**
-- Three action buttons per feature: "Used", "Seen", "Unknown"
-- Clicking any button records the response and advances to next feature
-- Progress indicator: "X of 5" + "X features reviewed"
-- Colored dot carousel indicators at bottom
-
----
-
-### Step 5: Feature Detail Modal
-
-**When:** User clicks "Explore" on any feature card (if applicable)
-
-**Content:**
-- Large hero image at top
-- Feature name and detailed description
-- Primary CTA button
-
----
-
-### Data Structure (Static/Local)
-
-**Feature Catalog:** ~15-20 features with names, descriptions, images, and value props
-
-**Firm Type Mapping:** Each firm type maps to 5 specific features
-
-**Local Storage Keys:**
-- `firm_type`
-- `seniority`
-- `usage`
-- `feature_feedback` (object with feature responses)
-
----
-
-### Design System
-
-- **Theme:** Dark mode with deep navy (#0f172a style) background
-- **Accent:** Blue glow effects, blue selection states
-- **Cards:** Subtle borders, rounded corners, glass-morphism hints
-- **Typography:** Clean, modern, high contrast white text
-- **Interactions:** Smooth transitions between steps, hover states on chips
+## What Stays the Same
+- Feature card layout and content
+- Auto-transition logic after 5th feature
+- Top-right progress counter ("X of Y features reviewed")
+- Back button functionality
+- Local storage persistence
 
