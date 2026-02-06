@@ -40,7 +40,7 @@ export const FeatureExploration = ({
   };
 
   return (
-    <div className="relative flex flex-col min-h-screen p-8">
+    <div className="relative flex flex-col min-h-screen p-8 pb-12">
       {/* Fixed Top-Left Back Button */}
       <Button
         variant="ghost"
@@ -58,7 +58,7 @@ export const FeatureExploration = ({
       </div>
 
       {/* Title */}
-      <div className="text-center mb-6 mt-12">
+      <div className="text-center mb-8 mt-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
         <p className="text-muted-foreground">
           Which features have you used, seen, or are unknown to you?
@@ -66,12 +66,12 @@ export const FeatureExploration = ({
       </div>
 
       {/* Feature Card - Split Layout */}
-      <div className="flex justify-center">
+      <div className="flex justify-center px-4">
         <FeatureCard feature={currentFeature} />
       </div>
 
       {/* Feedback Buttons - Enhanced */}
-      <div className="flex justify-center gap-4 mt-6 mb-4">
+      <div className="flex justify-center gap-4 mt-8 mb-8">
         <button
           onClick={() => handleFeedback("Used")}
           className="w-32 py-4 rounded-xl font-semibold
