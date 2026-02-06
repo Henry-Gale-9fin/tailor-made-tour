@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useOnboardingState } from "@/hooks/useOnboardingState";
 import { OnboardingStep } from "@/components/onboarding/OnboardingStep";
 import { SelectionSummary } from "@/components/onboarding/SelectionSummary";
 import { FeatureExploration } from "@/components/features/FeatureExploration";
+import { LoadingInterstitial } from "@/components/features/LoadingInterstitial";
+import { ReportPage } from "@/components/report/ReportPage";
 import { CompletionScreen } from "@/components/features/CompletionScreen";
 import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
 import { getFeaturesForFirmType } from "@/data/features";
+import { generateReport } from "@/data/mockReport";
 
-type Step = "firm" | "seniority" | "usage" | "features" | "complete";
+type Step = "firm" | "seniority" | "usage" | "features" | "loading" | "report" | "complete";
 
 const Index = () => {
   const {
@@ -24,6 +27,14 @@ const Index = () => {
 
   const [currentStep, setCurrentStep] = useState<Step>("firm");
 
+  const features = state.firmType ? getFeaturesForFirmType(state.firmType) : [];
+
+  // Check if all features have been reviewed
+  const allFeaturesReviewed = useMemo(() => {
+    if (features.length === 0) return false;
+    return features.every(f => state.featureFeedback[f.id]);
+  }, [features, state.featureFeedback]);
+
   // Determine current step based on state
   useEffect(() => {
     if (!state.firmType) {
@@ -32,7 +43,7 @@ const Index = () => {
       setCurrentStep("seniority");
     } else if (!state.usage) {
       setCurrentStep("usage");
-    } else {
+    } else if (currentStep !== "loading" && currentStep !== "report" && currentStep !== "complete") {
       setCurrentStep("features");
     }
   }, [state.firmType, state.seniority, state.usage]);
@@ -49,8 +60,27 @@ const Index = () => {
     setUsage(value);
   };
 
-  const handleFeatureComplete = () => {
-    setCurrentStep("complete");
+  // Auto-transition to loading when all features reviewed
+  const handleFeatureFeedback = (featureId: string, feedback: "Used" | "Seen" | "Unknown") => {
+    setFeatureFeedback(featureId, feedback);
+    
+    // Check if this was the last feature
+    const updatedFeedback = { ...state.featureFeedback, [featureId]: feedback };
+    const allReviewed = features.every(f => updatedFeedback[f.id]);
+    
+    if (allReviewed) {
+      // Store timestamp in localStorage
+      localStorage.setItem("feature_review_completed_at", new Date().toISOString());
+      setCurrentStep("loading");
+    }
+  };
+
+  const handleLoadingComplete = () => {
+    setCurrentStep("report");
+  };
+
+  const handleBackToExplore = () => {
+    setCurrentStep("features");
   };
 
   const handleRestart = () => {
@@ -58,7 +88,15 @@ const Index = () => {
     setCurrentStep("firm");
   };
 
-  const features = state.firmType ? getFeaturesForFirmType(state.firmType) : [];
+  // Generate report data
+  const report = useMemo(() => {
+    return generateReport(
+      state.firmType,
+      state.seniority,
+      state.usage,
+      state.featureFeedback
+    );
+  }, [state.firmType, state.seniority, state.usage, state.featureFeedback]);
 
   return (
     <div className="min-h-screen bg-background text-foreground dark">
@@ -101,10 +139,17 @@ const Index = () => {
         <FeatureExploration
           features={features}
           featureFeedback={state.featureFeedback}
-          onFeedback={setFeatureFeedback}
+          onFeedback={handleFeatureFeedback}
           onBack={() => clearUsage()}
-          onComplete={handleFeatureComplete}
         />
+      )}
+
+      {currentStep === "loading" && (
+        <LoadingInterstitial onComplete={handleLoadingComplete} />
+      )}
+
+      {currentStep === "report" && (
+        <ReportPage report={report} onBackToExplore={handleBackToExplore} />
       )}
 
       {currentStep === "complete" && (
@@ -112,7 +157,7 @@ const Index = () => {
       )}
 
       {/* Selection Summary Panel - only during onboarding steps */}
-      {currentStep !== "complete" && currentStep !== "features" && (
+      {currentStep !== "complete" && currentStep !== "features" && currentStep !== "loading" && currentStep !== "report" && (
         <SelectionSummary
           state={state}
           onClearFirmType={clearFirmType}
