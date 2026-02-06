@@ -58,7 +58,7 @@ export const FeatureExploration = ({
       </div>
 
       {/* Title */}
-      <div className="text-center mb-4 mt-12">
+      <div className="text-center mb-6 mt-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
         <p className="text-muted-foreground">
           Which features have you used, seen, or are unknown to you?
@@ -71,7 +71,7 @@ export const FeatureExploration = ({
       </div>
 
       {/* Feedback Buttons - Enhanced */}
-      <div className="flex justify-center gap-4 mt-4 mb-4">
+      <div className="flex justify-center gap-4 mt-6 mb-4">
         <button
           onClick={() => handleFeedback("Used")}
           className="w-32 py-4 rounded-xl font-semibold
