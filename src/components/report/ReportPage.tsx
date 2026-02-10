@@ -17,6 +17,14 @@ const maturityColors: Record<string, string> = {
   Expert: "text-success bg-success/10 border-success/30",
 };
 
+const scoreColors: Record<string, string> = {
+  Beginner: "text-orange-400",
+  Developing: "text-yellow-400",
+  Proficient: "text-blue-400",
+  Advanced: "text-purple-400",
+  Expert: "text-success",
+};
+
 export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
   return (
     <div className="min-h-screen p-6 md:p-8">
@@ -31,7 +39,7 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
         Back to Features
       </Button>
 
-      <div className="max-w-3xl mx-auto pt-16 space-y-6">
+      <div className="max-w-5xl mx-auto pt-16 space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
@@ -43,78 +51,92 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
           </div>
         </div>
 
-        {/* Maturity Snapshot Card */}
+        {/* Score + Platform Maturity Row */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-primary" />
-              </div>
-              <h2 className="text-lg font-semibold">Platform Maturity</h2>
-            </div>
-            
-            <div className="flex items-center gap-3 mb-4">
-              <span
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-semibold border",
-                  maturityColors[report.maturity.label] || maturityColors.Proficient
-                )}
-              >
-                {report.maturity.label}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-0">
+            {/* Score - Left Third */}
+            <div className="flex flex-col items-center justify-center p-8 md:border-r border-border/30">
+              <span className={cn("text-7xl font-bold", scoreColors[report.maturity.label] || "text-blue-400")}>
+                {report.score}
               </span>
+              <span className="text-muted-foreground text-sm mt-1">/ 100</span>
             </div>
-            
-            <p className="text-foreground leading-relaxed mb-4">
-              {report.maturity.summary}
-            </p>
-            
-            <p className="text-sm text-muted-foreground italic">
-              {report.maturity.peerComparison}
-            </p>
+
+            {/* Platform Maturity - Right Two-Thirds */}
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold">Platform Maturity</h2>
+              </div>
+
+              <div className="flex items-center gap-3 mb-4">
+                <span
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm font-semibold border",
+                    maturityColors[report.maturity.label] || maturityColors.Proficient
+                  )}
+                >
+                  {report.maturity.label}
+                </span>
+              </div>
+
+              <p className="text-foreground leading-relaxed mb-4">
+                {report.maturity.summary}
+              </p>
+
+              <p className="text-sm text-muted-foreground italic">
+                {report.maturity.peerComparison}
+              </p>
+            </div>
           </div>
         </Card>
 
-        {/* Strengths Card */}
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
-                <Eye className="w-5 h-5 text-success" />
+        {/* Strengths + Blind Spots Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Strengths */}
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-success" />
+                </div>
+                <h2 className="text-lg font-semibold">Your Strengths</h2>
               </div>
-              <h2 className="text-lg font-semibold">Your Strengths</h2>
-            </div>
-            
-            <ul className="space-y-3">
-              {report.strengths.bullets.map((bullet, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-success mt-2 flex-shrink-0" />
-                  <span className="text-foreground">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Card>
 
-        {/* Blind Spots Card */}
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-orange-400/20 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-orange-400" />
-              </div>
-              <h2 className="text-lg font-semibold">Blind Spots</h2>
+              <ul className="space-y-3">
+                {report.strengths.bullets.map((bullet, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-success mt-2 flex-shrink-0" />
+                    <span className="text-foreground">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            
-            <ul className="space-y-3">
-              {report.blindSpots.bullets.map((bullet, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
-                  <span className="text-foreground">{bullet}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Card>
+          </Card>
+
+          {/* Blind Spots */}
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-orange-400/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-orange-400" />
+                </div>
+                <h2 className="text-lg font-semibold">Blind Spots</h2>
+              </div>
+
+              <ul className="space-y-3">
+                {report.blindSpots.bullets.map((bullet, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
+                    <span className="text-foreground">{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Card>
+        </div>
 
         {/* Recommendations Card */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
@@ -125,7 +147,7 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
               </div>
               <h2 className="text-lg font-semibold">Top 3 Recommendations</h2>
             </div>
-            
+
             <div className="space-y-4">
               {report.recommendations.items.map((item, index) => (
                 <div
