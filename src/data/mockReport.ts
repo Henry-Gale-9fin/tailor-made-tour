@@ -3,6 +3,7 @@ export interface ReportData {
     title: string;
     subtitle: string;
   };
+  score: number;
   maturity: {
     label: string;
     summary: string;
@@ -51,11 +52,11 @@ export const getMaturityLevel = (
 
 export const getMaturitySummary = (level: MaturityLevel): string => {
   const summaries: Record<MaturityLevel, string> = {
-    Beginner: "You're just getting started with the platform. There's significant opportunity to enhance your workflow by exploring more features.",
-    Developing: "You've begun exploring the platform's capabilities. With a few more features in your toolkit, you'll see meaningful efficiency gains.",
-    Proficient: "You have a solid grasp of core features. You're using the platform effectively but may be missing some advanced capabilities.",
-    Advanced: "You're leveraging most of what the platform offers. Fine-tuning your workflow with a few additional tools could unlock even more value.",
-    Expert: "You're a power user with deep platform knowledge. You're well-positioned to maximize productivity and mentor others.",
+    Beginner: "You're at the very start of your platform journey, and that's perfectly fine — everyone starts here. The truth is, you're currently missing out on tools that could meaningfully change how you work day-to-day. The good news? Even adopting two or three features will put you ahead of most new users within weeks.",
+    Developing: "You've taken the first steps and clearly see the value, but you're still only scratching the surface. The features you haven't tried yet aren't nice-to-haves — they're the ones that separate efficient teams from everyone else. Commit to exploring one new capability each week and you'll notice the compounding returns quickly.",
+    Proficient: "You've built a strong foundation and clearly know your way around the core tools. That said, you're leaving meaningful value on the table by not engaging with some of the platform's more powerful capabilities. The features you haven't explored yet are specifically designed for professionals at your level — adopting even one could noticeably sharpen your edge.",
+    Advanced: "You're operating at a high level and getting real leverage from the platform. Most users never reach this point, which speaks to your commitment to efficiency. The remaining gaps in your toolkit are small but impactful — closing them would put you in the top tier of platform users across the industry.",
+    Expert: "You're a genuine power user with deep, practical knowledge of what this platform can do. You're extracting maximum value and likely setting the standard for your team. At this stage, your biggest opportunity is helping others around you level up — your expertise is an asset that multiplies when shared.",
   };
   return summaries[level];
 };
@@ -67,11 +68,24 @@ export const generateReport = (
   featureFeedback: Record<string, "Used" | "Seen" | "Unknown">
 ): ReportData => {
   const feedbackValues = Object.values(featureFeedback);
+  const totalFeatures = feedbackValues.length || 1;
   const usedCount = feedbackValues.filter(v => v === "Used").length;
   const seenCount = feedbackValues.filter(v => v === "Seen").length;
   const unknownCount = feedbackValues.filter(v => v === "Unknown").length;
 
   const maturityLevel = getMaturityLevel(usedCount, seenCount, frequency);
+
+  const frequencyBonus = 
+    frequency === "Daily" ? 2 :
+    frequency === "Weekly" ? 1.5 :
+    frequency === "Monthly" ? 1 :
+    frequency === "Yearly" ? 0.5 : 0;
+
+  const score = Math.min(100, Math.round(
+    (usedCount / totalFeatures) * 50 +
+    (seenCount / totalFeatures) * 20 +
+    frequencyBonus * 6
+  ));
 
   // Generate strengths based on "Used" features
   const strengths: string[] = [];
@@ -177,6 +191,7 @@ export const generateReport = (
       title: "Your Personalized Platform Report",
       subtitle: `${firmType || "Professional"} • ${seniority || "Team Member"} • ${frequency || "Regular"} User`,
     },
+    score,
     maturity: {
       label: maturityLevel,
       summary: getMaturitySummary(maturityLevel),
