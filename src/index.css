@@ -104,10 +104,10 @@ All colors MUST be HSL.
   }
 
   .dark body {
-    background: radial-gradient(
-      ellipse at center,
-      hsl(217 60% 18%) 0%,
-      hsl(222 40% 11%) 50%,
+    background: linear-gradient(
+      to top,
+      hsl(222 40% 14%) 0%,
+      hsl(222 42% 10%) 50%,
       hsl(222 45% 7%) 100%
     );
     min-height: 100vh;
