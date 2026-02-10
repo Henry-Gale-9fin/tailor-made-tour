@@ -56,10 +56,30 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
           <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-0">
             {/* Score - Left Third */}
             <div className="flex flex-col items-center justify-center p-8 md:border-r border-border/30">
-              <span className={cn("text-7xl font-bold", scoreColors[report.maturity.label] || "text-blue-400")}>
-                {report.score}
-              </span>
-              <span className="text-muted-foreground text-sm mt-1">/ 100</span>
+              <div className="relative w-32 h-32 flex items-center justify-center">
+                {/* Background ring */}
+                <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 120 120">
+                  <circle
+                    cx="60" cy="60" r="52"
+                    fill="none"
+                    stroke="hsl(var(--muted))"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="60" cy="60" r="52"
+                    fill="none"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 52}`}
+                    strokeDashoffset={`${2 * Math.PI * 52 * (1 - report.score / 100)}`}
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+                <span className={cn("text-4xl font-bold", scoreColors[report.maturity.label] || "text-primary")}>
+                  {report.score}
+                </span>
+              </div>
             </div>
 
             {/* Platform Maturity - Right Two-Thirds */}
