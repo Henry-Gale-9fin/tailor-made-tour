@@ -10,19 +10,19 @@ interface ReportPageProps {
 }
 
 const maturityColors: Record<string, string> = {
-  Beginner: "text-orange-400 bg-orange-400/10 border-orange-400/30",
-  Developing: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30",
-  Proficient: "text-blue-400 bg-blue-400/10 border-blue-400/30",
-  Advanced: "text-purple-400 bg-purple-400/10 border-purple-400/30",
-  Expert: "text-success bg-success/10 border-success/30",
+  Beginner: "text-muted-foreground bg-muted/30 border-border/50",
+  Developing: "text-muted-foreground bg-muted/30 border-border/50",
+  Proficient: "text-primary bg-primary/10 border-primary/30",
+  Advanced: "text-primary bg-primary/10 border-primary/30",
+  Expert: "text-primary bg-primary/10 border-primary/30",
 };
 
 const scoreColors: Record<string, string> = {
-  Beginner: "text-orange-400",
-  Developing: "text-yellow-400",
-  Proficient: "text-blue-400",
-  Advanced: "text-purple-400",
-  Expert: "text-success",
+  Beginner: "text-muted-foreground",
+  Developing: "text-muted-foreground",
+  Proficient: "text-primary",
+  Advanced: "text-primary",
+  Expert: "text-primary",
 };
 
 export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
@@ -99,8 +99,8 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-success" />
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-primary" />
                 </div>
                 <h2 className="text-lg font-semibold">Your Strengths</h2>
               </div>
@@ -108,7 +108,7 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
               <ul className="space-y-3">
                 {report.strengths.bullets.map((bullet, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-success mt-2 flex-shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
                     <span className="text-foreground">{bullet}</span>
                   </li>
                 ))}
@@ -120,8 +120,8 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
           <Card className="border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-orange-400/20 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-orange-400" />
+                <div className="w-10 h-10 rounded-full bg-muted/40 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <h2 className="text-lg font-semibold">Blind Spots</h2>
               </div>
@@ -129,7 +129,7 @@ export const ReportPage = ({ report, onBackToExplore }: ReportPageProps) => {
               <ul className="space-y-3">
                 {report.blindSpots.bullets.map((bullet, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-muted-foreground mt-2 flex-shrink-0" />
                     <span className="text-foreground">{bullet}</span>
                   </li>
                 ))}
