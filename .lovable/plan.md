@@ -1,92 +1,64 @@
 
+# Report Page Redesign
 
-# Enhance Feedback Buttons & Remove Progress Dots
+## Layout Changes
 
-## Summary
-Redesign the "Used / Seen / Unknown" buttons to be more visually engaging with clearer interaction feedback, and remove the carousel indicator dots below them.
+The report page will be restructured into a new layout with these sections stacked vertically:
 
-## Changes
+1. **Title + Subtitle** -- centered at top (unchanged)
+2. **Score + Platform Maturity** -- side by side in a 1/3 + 2/3 grid
+3. **Strengths + Blind Spots** -- side by side in a 50/50 grid
+4. **Top 3 Recommendations** -- full width card
+5. **CTA** -- closing section
 
-### 1. Remove Carousel Progress Indicator
-Delete the entire carousel indicators section (lines 99-118 in `FeatureExploration.tsx`). The progress is already shown in the top-right corner as "X of Y features reviewed", so the dots are redundant.
+## Detailed Changes
 
-### 2. Redesign Feedback Buttons
-Transform the buttons from plain secondary buttons into more prominent, visually distinct action cards:
+### 1. Data Model Update (`src/data/mockReport.ts`)
 
-**Visual Design:**
-- Larger touch targets with generous padding (py-4 px-6)
-- Rounded corners (rounded-xl) for a softer, more modern feel
-- Border styling that responds to hover
+- Add a numeric `score` field (0-100) to the `ReportData` interface and `generateReport` function, calculated from used/seen counts and frequency
+- Expand maturity summaries to be longer, more supportive, concise, and opinionated in tone -- each will be 3-4 sentences instead of 1-2
 
-**Hover & Active States:**
-- On hover: subtle glow effect, border color intensifies, slight scale-up
-- On click: brief "pressed" animation (scale down then up)
-- After click: visual confirmation before transitioning (brief checkmark flash or color pulse)
+### 2. Report Page Layout (`src/components/report/ReportPage.tsx`)
 
-### 3. Add Click Feedback Animation
-When a user clicks any feedback button:
-- Brief visual pulse or checkmark overlay to confirm the action registered
-- Smooth transition to the next feature card
+- **Score + Maturity row**: A single Card with a `grid-cols-[1fr_2fr]` layout
+  - Left third: Large score number displayed prominently (e.g. "72" with "/100" smaller beneath), color-coded by maturity level
+  - Right two-thirds: Platform Maturity content -- label badge, expanded summary text, and peer comparison
+- **Strengths + Blind Spots row**: Two Cards side by side in a `grid-cols-2` layout, each taking 50% width
+- **Recommendations**: Full-width card below, unchanged in structure
+- Widen the container from `max-w-3xl` to `max-w-5xl` to accommodate the side-by-side layouts
+
+### 3. Background Gradient (`src/index.css`)
+
+- Change the `.dark body` background from `linear-gradient(to top, ...)` to a stronger radial gradient
+- Use more contrast between the bright center and dark edges to create a more dramatic glow effect
 
 ## Technical Details
 
-**File: `src/components/features/FeatureExploration.tsx`**
-
-1. Remove the carousel indicators `<div>` block (lines 99-118)
-2. Replace the button group with enhanced styled buttons:
-
-```tsx
-{/* Feedback Buttons - Enhanced */}
-<div className="flex justify-center gap-4 mt-8 mb-4">
-  <button
-    onClick={() => handleFeedback("Used")}
-    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-               border-2 border-success/30 bg-success/5 
-               hover:border-success hover:bg-success/10 hover:scale-105
-               active:scale-95 transition-all duration-200"
-  >
-    <Check className="w-6 h-6 text-success" />
-    <span className="font-semibold text-success">Used</span>
-  </button>
-  
-  <button
-    onClick={() => handleFeedback("Seen")}
-    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-               border-2 border-primary/30 bg-primary/5 
-               hover:border-primary hover:bg-primary/10 hover:scale-105
-               active:scale-95 transition-all duration-200"
-  >
-    <Eye className="w-6 h-6 text-primary" />
-    <span className="font-semibold text-primary">Seen</span>
-  </button>
-  
-  <button
-    onClick={() => handleFeedback("Unknown")}
-    className="group flex flex-col items-center gap-2 px-8 py-4 rounded-xl 
-               border-2 border-muted-foreground/30 bg-muted/20 
-               hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
-               active:scale-95 transition-all duration-200"
-  >
-    <HelpCircle className="w-6 h-6 text-muted-foreground" />
-    <span className="font-semibold text-muted-foreground">Unknown</span>
-  </button>
-</div>
+### Score Calculation (mockReport.ts)
+```
+score = Math.min(100, Math.round(
+  (usedCount / totalFeatures) * 50 +
+  (seenCount / totalFeatures) * 20 +
+  frequencyBonus * 6
+))
 ```
 
-**Key styling features:**
-- Icons above text (vertical layout) for better scannability
-- Color-coded borders and text for instant recognition
-- `hover:scale-105` for lift effect on hover
-- `active:scale-95` for satisfying click feedback
-- Smooth `transition-all duration-200` for polished animations
+### Gradient (index.css)
+```css
+.dark body {
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    hsl(217 60% 22%) 0%,
+    hsl(222 42% 12%) 40%,
+    hsl(222 45% 6%) 100%
+  );
+}
+```
 
-## Files Modified
-- `src/components/features/FeatureExploration.tsx`
+### Maturity Summary Tone
+Each level's summary will be rewritten to be longer and more opinionated. For example, "Proficient" might read: "You've built a strong foundation and clearly know your way around the core tools. That said, you're leaving meaningful value on the table by not engaging with some of the platform's more powerful capabilities. The features you haven't explored yet are specifically designed for professionals at your level -- adopting even one could noticeably sharpen your edge."
 
-## What Stays the Same
-- Feature card layout and content
-- Auto-transition logic after 5th feature
-- Top-right progress counter ("X of Y features reviewed")
-- Back button functionality
-- Local storage persistence
-
+### Files Modified
+- `src/data/mockReport.ts` -- add `score` field, expand summaries
+- `src/components/report/ReportPage.tsx` -- new grid layout
+- `src/index.css` -- stronger radial gradient
