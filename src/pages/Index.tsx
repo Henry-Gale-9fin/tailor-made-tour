@@ -7,7 +7,7 @@ import { LoadingInterstitial } from "@/components/features/LoadingInterstitial";
 import { ReportPage } from "@/components/report/ReportPage";
 import { CompletionScreen } from "@/components/features/CompletionScreen";
 import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
-import { getFeaturesForFirmType } from "@/data/features";
+import { getFeaturesForFirmType, fetchAllFeatures, Feature } from "@/data/features";
 import { generateReport } from "@/data/mockReport";
 
 type Step = "firm" | "seniority" | "usage" | "features" | "loading" | "report" | "complete";
@@ -26,8 +26,14 @@ const Index = () => {
   } = useOnboardingState();
 
   const [currentStep, setCurrentStep] = useState<Step>("firm");
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
 
-  const features = state.firmType ? getFeaturesForFirmType(state.firmType) : [];
+  // Load features from DB
+  useEffect(() => {
+    fetchAllFeatures().then(setAllFeatures);
+  }, []);
+
+  const features = state.firmType ? getFeaturesForFirmType(state.firmType, allFeatures) : [];
 
   // Check if all features have been reviewed
   const allFeaturesReviewed = useMemo(() => {
@@ -64,12 +70,10 @@ const Index = () => {
   const handleFeatureFeedback = (featureId: string, feedback: "Used" | "Seen" | "Unknown") => {
     setFeatureFeedback(featureId, feedback);
     
-    // Check if this was the last feature
     const updatedFeedback = { ...state.featureFeedback, [featureId]: feedback };
     const allReviewed = features.every(f => updatedFeedback[f.id]);
     
     if (allReviewed) {
-      // Store timestamp in localStorage
       localStorage.setItem("feature_review_completed_at", new Date().toISOString());
       setCurrentStep("loading");
     }
@@ -94,9 +98,10 @@ const Index = () => {
       state.firmType,
       state.seniority,
       state.usage,
-      state.featureFeedback
+      state.featureFeedback,
+      allFeatures
     );
-  }, [state.firmType, state.seniority, state.usage, state.featureFeedback]);
+  }, [state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures]);
 
   return (
     <div className="min-h-screen bg-background text-foreground dark">
@@ -156,7 +161,6 @@ const Index = () => {
         <CompletionScreen onRestart={handleRestart} />
       )}
 
-      {/* Selection Summary Panel - only during onboarding steps */}
       {currentStep !== "complete" && currentStep !== "features" && currentStep !== "loading" && currentStep !== "report" && (
         <SelectionSummary
           state={state}

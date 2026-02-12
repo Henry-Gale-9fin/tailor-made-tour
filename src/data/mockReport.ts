@@ -1,3 +1,5 @@
+import { Feature } from "./features";
+
 export interface ReportData {
   header: {
     title: string;
@@ -65,7 +67,8 @@ export const generateReport = (
   firmType: string | null,
   seniority: string | null,
   frequency: string | null,
-  featureFeedback: Record<string, "Used" | "Seen" | "Unknown">
+  featureFeedback: Record<string, "Used" | "Seen" | "Unknown">,
+  allFeatures: Feature[] = []
 ): ReportData => {
   const feedbackValues = Object.values(featureFeedback);
   const totalFeatures = feedbackValues.length || 1;
@@ -87,6 +90,9 @@ export const generateReport = (
     frequencyBonus * 6
   ));
 
+  // Build a lookup from loaded features
+  const featureLookup = new Map(allFeatures.map(f => [f.id, f]));
+
   // Generate strengths based on "Used" features
   const strengths: string[] = [];
   if (usedCount >= 3) {
@@ -103,7 +109,7 @@ export const generateReport = (
     strengths.push("Potential for rapid skill development");
   }
 
-  // Generate blind spots based on "Unknown" or "Seen" features
+  // Generate blind spots
   const blindSpots: string[] = [];
   if (unknownCount >= 2) {
     blindSpots.push("Several high-value features remain undiscovered");
@@ -119,70 +125,38 @@ export const generateReport = (
   }
 
   // Generate recommendations (prioritize Unknown, then Seen features)
-  const unknownFeatures = Object.entries(featureFeedback)
+  const unknownFeatureIds = Object.entries(featureFeedback)
     .filter(([_, status]) => status === "Unknown")
     .map(([id]) => id);
   
-  const seenFeatures = Object.entries(featureFeedback)
+  const seenFeatureIds = Object.entries(featureFeedback)
     .filter(([_, status]) => status === "Seen")
     .map(([id]) => id);
 
-  const recommendedFeatures = [...unknownFeatures, ...seenFeatures].slice(0, 3);
+  const recommendedIds = [...unknownFeatureIds, ...seenFeatureIds].slice(0, 3);
   
-  const featureRationales: Record<string, string> = {
-    "deal-tracker": "Real-time deal monitoring can significantly reduce time spent on manual market surveillance.",
-    "document-search": "AI-powered document search can save hours of manual review time per week.",
-    "credit-analysis": "Standardized credit metrics enable faster, more consistent investment decisions.",
-    "market-intelligence": "Curated market feeds help you stay ahead of breaking developments.",
-    "portfolio-analytics": "Real-time portfolio insights can improve risk management and performance tracking.",
-    "covenant-alerts": "Automated covenant monitoring reduces the risk of missing critical threshold breaches.",
-    "legal-docs": "Access to legal precedents accelerates documentation review and negotiation.",
-    "pricing-data": "Institutional-grade pricing data improves valuation accuracy and trade execution.",
-    "issuer-profiles": "Comprehensive issuer data enables faster due diligence and credit assessment.",
-    "deal-comps": "Deal comparables streamline pricing analysis for new issues and secondary trades.",
-    "workflow-tools": "Workflow automation can eliminate repetitive tasks and free up analytical capacity.",
-    "data-export": "Seamless data export integrates platform insights into your existing processes.",
-    "collaboration": "Team collaboration features improve information sharing and reduce duplicate work.",
-    "api-access": "API access enables custom integrations tailored to your specific workflow needs.",
-    "advisory-tools": "Advisory tools streamline client deliverables and market updates.",
-  };
+  const recommendations = recommendedIds.map(featureId => {
+    const feature = featureLookup.get(featureId);
+    return {
+      featureId,
+      title: feature?.name || featureId,
+      rationale: feature?.description || "This feature could enhance your workflow efficiency.",
+    };
+  });
 
-  const featureTitles: Record<string, string> = {
-    "deal-tracker": "Deal Tracker",
-    "document-search": "Document Search",
-    "credit-analysis": "Credit Analysis",
-    "market-intelligence": "Market Intelligence",
-    "portfolio-analytics": "Portfolio Analytics",
-    "covenant-alerts": "Covenant Alerts",
-    "legal-docs": "Legal Document Library",
-    "pricing-data": "Pricing Data",
-    "issuer-profiles": "Issuer Profiles",
-    "deal-comps": "Deal Comparables",
-    "workflow-tools": "Workflow Tools",
-    "data-export": "Data Export",
-    "collaboration": "Team Collaboration",
-    "api-access": "API Access",
-    "advisory-tools": "Advisory Tools",
-  };
-
-  const recommendations = recommendedFeatures.map(featureId => ({
-    featureId,
-    title: featureTitles[featureId] || featureId,
-    rationale: featureRationales[featureId] || "This feature could enhance your workflow efficiency.",
-  }));
-
-  // Fill with defaults if less than 3 recommendations
-  while (recommendations.length < 3) {
-    const defaultRecs = [
-      { featureId: "workflow-tools", title: "Workflow Tools", rationale: "Automation can save hours of manual work each week." },
-      { featureId: "market-intelligence", title: "Market Intelligence", rationale: "Stay ahead with curated market news and alerts." },
-      { featureId: "data-export", title: "Data Export", rationale: "Integrate platform data seamlessly into your existing tools." },
-    ];
-    const rec = defaultRecs[recommendations.length];
-    if (!recommendations.find(r => r.featureId === rec.featureId)) {
-      recommendations.push(rec);
-    } else {
-      break;
+  // Fill with defaults if less than 3
+  if (recommendations.length < 3 && allFeatures.length > 0) {
+    const usedIds = new Set(recommendations.map(r => r.featureId));
+    for (const f of allFeatures) {
+      if (recommendations.length >= 3) break;
+      if (!usedIds.has(f.id)) {
+        recommendations.push({
+          featureId: f.id,
+          title: f.name,
+          rationale: f.description,
+        });
+        usedIds.add(f.id);
+      }
     }
   }
 
