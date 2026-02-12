@@ -1,6 +1,7 @@
 import { Feature } from "@/data/features";
 import { Card } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface FeatureCardProps {
   feature: Feature;
@@ -13,26 +14,35 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
       style={{ maxHeight: '80vh' }}
     >
       <div className="p-6">
-        {/* Feature Title - Full Width */}
-        <a
-          href={feature.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-2xl font-bold hover:text-primary transition-colors inline-flex items-center gap-2 group mb-5"
-        >
-          {feature.name}
-          <ExternalLink className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity" />
-        </a>
+        {/* Feature Title + Badges */}
+        <div className="flex items-start justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">{feature.name}</h2>
+            <Badge variant="secondary" className="text-xs">{feature.category}</Badge>
+            {feature.status === "Beta" && (
+              <Badge className="text-xs bg-primary/20 text-primary border-primary/30">Beta</Badge>
+            )}
+          </div>
+          {feature.url && (
+            <a
+              href={feature.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ExternalLink className="w-5 h-5" />
+            </a>
+          )}
+        </div>
 
-        {/* Two-Column Grid: 50/50 */}
+        {/* Two-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* LEFT COLUMN: Media */}
+          {/* LEFT: Media */}
           <div className="flex flex-col">
             <div className="bg-muted/30 rounded-xl border border-border/30 overflow-hidden h-full">
               <div className="aspect-[4/3] w-full h-full">
                 <img
-                  src={feature.image}
+                  src={feature.image_url || "/placeholder.svg"}
                   alt={feature.name}
                   className="w-full h-full object-contain"
                 />
@@ -40,32 +50,22 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Value → Description → Use Case */}
+          {/* RIGHT: Description + Use Case */}
           <div className="flex flex-col gap-4 md:pl-2 md:pr-2">
-            {/* Primary Value Statement (TOP) */}
-            <div className="bg-primary/10 rounded-lg p-5 border border-primary/20 order-3 md:order-none">
+            {/* Description */}
+            <div className="bg-primary/10 rounded-lg p-5 border border-primary/20">
               <p className="text-primary text-base font-semibold leading-relaxed">
-                {feature.valueProp}
-              </p>
-            </div>
-
-            {/* Description Block */}
-            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-4 md:order-none">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                Description
-              </h4>
-              <p className="text-foreground text-sm leading-relaxed">
                 {feature.description}
               </p>
             </div>
 
-            {/* Use Case Block */}
-            <div className="bg-muted/20 rounded-lg p-5 border border-border/30 order-5 md:order-none">
+            {/* Use Case */}
+            <div className="bg-muted/20 rounded-lg p-5 border border-border/30">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                 Use Case
               </h4>
               <p className="text-foreground text-sm leading-relaxed">
-                {feature.longDescription}
+                {feature.use_case}
               </p>
             </div>
           </div>
