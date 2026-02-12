@@ -25,6 +25,14 @@ export const FeatureExploration = ({
 
   const currentFeature = features[currentIndex];
 
+  if (!currentFeature) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-muted-foreground">
+        Loading features...
+      </div>
+    );
+  }
+
   const handleFeedback = (feedback: "Used" | "Seen" | "Unknown") => {
     onFeedback(currentFeature.id, feedback);
     
