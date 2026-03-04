@@ -52,8 +52,8 @@ export const OnboardingStep = ({
       <div
         className={
           variant === "card"
-            ? "relative mx-auto w-full max-w-4xl rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5"
-            : "relative mx-auto w-full max-w-4xl"
+            ? "relative mx-auto w-fit max-w-[90vw] rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5"
+            : "relative mx-auto w-fit max-w-[90vw]"
         }
       >
         {variant === "card" && (
@@ -65,7 +65,7 @@ export const OnboardingStep = ({
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">{title}</h1>
 
           {/* Options */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-nowrap justify-center gap-4">
             {options.map((option) => (
               <SelectionChip
                 key={option.id}
