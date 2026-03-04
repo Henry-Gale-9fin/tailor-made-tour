@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 export interface OnboardingState {
   firmType: string | null;
@@ -7,31 +7,13 @@ export interface OnboardingState {
   featureFeedback: Record<string, "Used" | "Seen" | "Unknown">;
 }
 
-const STORAGE_KEY = "onboarding_state";
-
-const getInitialState = (): OnboardingState => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error("Failed to parse onboarding state:", e);
-  }
-  return {
+export const useOnboardingState = () => {
+  const [state, setState] = useState<OnboardingState>({
     firmType: null,
     seniority: null,
     usage: null,
     featureFeedback: {},
-  };
-};
-
-export const useOnboardingState = () => {
-  const [state, setState] = useState<OnboardingState>(getInitialState);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+  });
 
   const setFirmType = useCallback((firmType: string) => {
     setState(prev => ({ ...prev, firmType, seniority: null }));
