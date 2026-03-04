@@ -1,25 +1,18 @@
 
 
-## Plan: Apply Animated Background & Fix Feature Reset Bug
+## Plan: Fix Animated Background by Applying to `body` Instead of `#root`
 
-### Problem 1: Animated background not showing
-The CSS targets `.dark #root` but the `dark` class is placed on a `<div>` **inside** `#root` (line 107 of Index.tsx). The CSS pseudo-elements (`::before`, `::after`) never activate because `.dark` is not an ancestor of `#root` — it's a child.
-
-**Fix:** Add `dark` class to the `<html>` element on mount (via a `useEffect` in App.tsx or Index.tsx), and remove the `dark` class from the wrapper div in Index.tsx.
-
-### Problem 2: Feature counter not resetting
-The `reviewedCount` in `FeatureExploration` counts feedback entries that match current features. When `clearUsage()` is called to go back, `featureFeedback` is **not** cleared — only `usage` is set to null. So when the user re-enters the feature step, old feedback persists.
-
-**Fix:** Clear `featureFeedback` whenever `clearUsage` is called (since changing usage re-enters the feature flow). Also clear it in `clearFirmType` and `clearSeniority` since those affect which features are shown.
+### Root Cause
+The current CSS applies the animated background to `.dark #root` using pseudo-elements. This doesn't work because `#root` has `overflow: hidden` which clips the pseudo-elements positioned with `inset: -25%`, and the `.dark` class dependency adds complexity. The user's working version applies everything directly to `body` using CSS custom properties and `position: fixed` pseudo-elements — a simpler, proven approach.
 
 ### Changes
 
-1. **`src/pages/Index.tsx`**
-   - Remove `dark` from the wrapper div's className
-   - Add `useEffect` to set `document.documentElement.classList.add('dark')` on mount
+**`src/index.css`** — Replace the current `@layer base` block and keyframes with the user's working version:
+- Add aurora CSS custom properties (`--bg-base`, `--bg-mid`, `--blob-1`, `--blob-2`, `--blob-3`) to both `:root` and `.dark`
+- Move animated background from `.dark #root` / `.dark #root::before/after` to `body` / `body::before` / `body::after`
+- Use `position: fixed` and `z-index: -1` on pseudo-elements (works with scrolling, no overflow clipping)
+- Remove all `.dark #root` related background rules
+- Update `@media (prefers-reduced-motion)` to target `body` pseudo-elements
 
-2. **`src/hooks/useOnboardingState.ts`**
-   - In `clearUsage`, also reset `featureFeedback: {}`
-   - In `clearFirmType`, also reset `featureFeedback: {}`
-   - In `clearSeniority`, also reset `featureFeedback: {}`
+**`src/pages/Index.tsx`** — Keep the existing `useEffect` that adds `dark` class to `<html>` (still needed for dark mode CSS variables).
 
