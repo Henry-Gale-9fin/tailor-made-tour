@@ -38,7 +38,7 @@ const Index = () => {
   // Check if all features have been reviewed
   const allFeaturesReviewed = useMemo(() => {
     if (features.length === 0) return false;
-    return features.every(f => state.featureFeedback[f.id]);
+    return features.every((f) => state.featureFeedback[f.id]);
   }, [features, state.featureFeedback]);
 
   // Determine current step based on state
@@ -69,10 +69,10 @@ const Index = () => {
   // Auto-transition to loading when all features reviewed
   const handleFeatureFeedback = (featureId: string, feedback: "Used" | "Seen" | "Unknown") => {
     setFeatureFeedback(featureId, feedback);
-    
+
     const updatedFeedback = { ...state.featureFeedback, [featureId]: feedback };
-    const allReviewed = features.every(f => updatedFeedback[f.id]);
-    
+    const allReviewed = features.every((f) => updatedFeedback[f.id]);
+
     if (allReviewed) {
       localStorage.setItem("feature_review_completed_at", new Date().toISOString());
       setCurrentStep("loading");
@@ -94,21 +94,15 @@ const Index = () => {
 
   // Generate report data
   const report = useMemo(() => {
-    return generateReport(
-      state.firmType,
-      state.seniority,
-      state.usage,
-      state.featureFeedback,
-      allFeatures
-    );
+    return generateReport(state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures);
   }, [state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures]);
 
   useEffect(() => {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.add("dark");
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       {currentStep === "firm" && (
         <OnboardingStep
           title="What type of firm do you work for?"
@@ -153,27 +147,24 @@ const Index = () => {
         />
       )}
 
-      {currentStep === "loading" && (
-        <LoadingInterstitial onComplete={handleLoadingComplete} />
-      )}
+      {currentStep === "loading" && <LoadingInterstitial onComplete={handleLoadingComplete} />}
 
-      {currentStep === "report" && (
-        <ReportPage report={report} onBackToExplore={handleBackToExplore} />
-      )}
+      {currentStep === "report" && <ReportPage report={report} onBackToExplore={handleBackToExplore} />}
 
-      {currentStep === "complete" && (
-        <CompletionScreen onRestart={handleRestart} />
-      )}
+      {currentStep === "complete" && <CompletionScreen onRestart={handleRestart} />}
 
-      {currentStep !== "complete" && currentStep !== "features" && currentStep !== "loading" && currentStep !== "report" && (
-        <SelectionSummary
-          state={state}
-          onClearFirmType={clearFirmType}
-          onClearSeniority={clearSeniority}
-          onClearUsage={clearUsage}
-          onClearAll={clearAll}
-        />
-      )}
+      {currentStep !== "complete" &&
+        currentStep !== "features" &&
+        currentStep !== "loading" &&
+        currentStep !== "report" && (
+          <SelectionSummary
+            state={state}
+            onClearFirmType={clearFirmType}
+            onClearSeniority={clearSeniority}
+            onClearUsage={clearUsage}
+            onClearAll={clearAll}
+          />
+        )}
     </div>
   );
 };
