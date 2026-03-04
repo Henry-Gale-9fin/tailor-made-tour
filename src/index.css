@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
 All colors MUST be HSL.
 */
 
@@ -49,48 +49,62 @@ All colors MUST be HSL.
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
+
+    /* Aurora background tokens (HSL-only) */
+    --bg-base: 222 84% 5%;
+    --bg-mid: 223 70% 10%;
+    --blob-1: 221 83% 53%;
+    --blob-2: 224 64% 33%;
+    --blob-3: 217 91% 60%;
   }
 
   .dark {
-    --background: 222 40% 11%;
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 222 47% 8%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 8%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217 33% 17%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 63% 31%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 217 91% 60%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
 
-    --sidebar-background: 240 6% 10%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 224 76% 48%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
+
+    /* Aurora punchier in dark mode */
+    --bg-base: 222 84% 5%;
+    --bg-mid: 223 70% 10%;
+    --blob-1: 221 83% 56%;
+    --blob-2: 224 64% 36%;
+    --blob-3: 217 91% 62%;
   }
 }
 
@@ -100,8 +114,16 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+
+    /* Dark base + vignette + subtle spotlight */
+    background:
+      radial-gradient(circle at 50% 45%, hsl(var(--blob-3) / 0.14), transparent 55%),
+      radial-gradient(circle at 50% 50%, hsl(0 0% 0% / 0.55), hsl(0 0% 0% / 0.88) 65%),
+      linear-gradient(180deg, hsl(var(--bg-base)) 0%, hsl(var(--bg-mid)) 60%, hsl(var(--bg-base)) 100%);
   }
 
   html,
@@ -109,52 +131,35 @@ All colors MUST be HSL.
     min-height: 100%;
   }
 
-  /* Put the animated background on the React root so it's not covered */
-  .dark #root {
-    position: relative;
-    overflow: hidden;
-
-    /* Dark base + vignette + subtle spotlight (HSL-only) */
-    background:
-      radial-gradient(circle at 50% 45%, hsl(217 91% 60% / 0.14), transparent 55%),
-      radial-gradient(circle at 50% 50%, hsl(0 0% 0% / 0.55), hsl(0 0% 0% / 0.88) 65%),
-      linear-gradient(180deg, hsl(222 45% 6%) 0%, hsl(222 42% 12%) 60%, hsl(222 45% 6%) 100%);
-  }
-
-  .dark #root::before,
-  .dark #root::after {
+  /* Moving blob layers */
+  body::before,
+  body::after {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: -25%;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     filter: blur(55px);
     transform: translate3d(0, 0, 0);
     will-change: transform;
   }
 
-  .dark #root::before {
+  body::before {
     opacity: 0.95;
     background:
-      radial-gradient(circle at 20% 30%, hsl(330 80% 50% / 0.6), transparent 45%),
-      radial-gradient(circle at 80% 40%, hsl(310 60% 40% / 0.55), transparent 50%),
-      radial-gradient(circle at 55% 85%, hsl(340 91% 60% / 0.45), transparent 55%);
+      radial-gradient(circle at 20% 30%, hsl(var(--blob-1) / 0.6), transparent 45%),
+      radial-gradient(circle at 80% 40%, hsl(var(--blob-2) / 0.55), transparent 50%),
+      radial-gradient(circle at 55% 85%, hsl(var(--blob-3) / 0.45), transparent 55%);
     animation: blobMove1 11s ease-in-out infinite alternate;
   }
 
-  .dark #root::after {
+  body::after {
     opacity: 0.6;
     mix-blend-mode: screen;
     background:
-      radial-gradient(circle at 30% 70%, hsl(320 76% 48% / 0.45), transparent 55%),
-      radial-gradient(circle at 75% 20%, hsl(340 60% 50% / 0.45), transparent 55%);
+      radial-gradient(circle at 30% 70%, hsl(var(--blob-1) / 0.45), transparent 55%),
+      radial-gradient(circle at 75% 20%, hsl(var(--blob-2) / 0.45), transparent 55%);
     animation: blobMove2 14s ease-in-out infinite alternate;
-  }
-
-  /* Ensure actual app UI is above the blobs */
-  .dark #root > * {
-    position: relative;
-    z-index: 1;
   }
 }
 
@@ -183,8 +188,8 @@ All colors MUST be HSL.
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dark #root::before,
-  .dark #root::after {
+  body::before,
+  body::after {
     animation: none !important;
   }
 }
