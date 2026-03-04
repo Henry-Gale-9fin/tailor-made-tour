@@ -123,4 +123,5 @@ export const FeatureExploration = ({
       </div>
     </div>
   </div>
-);
+  );
+};
