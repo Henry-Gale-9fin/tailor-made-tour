@@ -54,7 +54,7 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
           <div className="flex flex-col gap-4 md:pl-2 md:pr-2">
             {/* Description */}
             <div className="bg-primary/10 rounded-lg p-5 border border-primary/20">
-              <p className="text-primary text-base font-semibold leading-relaxed">
+              <p className="text-primary text-base font-semibold leading-relaxed line-clamp-3">
                 {feature.description}
               </p>
             </div>
@@ -64,7 +64,7 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
                 Use Case
               </h4>
-              <p className="text-foreground text-sm leading-relaxed">
+              <p className="text-foreground text-sm leading-relaxed line-clamp-4">
                 {feature.use_case}
               </p>
             </div>
