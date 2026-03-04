@@ -53,9 +53,9 @@ All colors MUST be HSL.
     /* Aurora background tokens (HSL-only) */
     --bg-base: 222 84% 5%;
     --bg-mid: 223 70% 10%;
-    --blob-1: 217 91% 60%; /* bright blue */
-    --blob-2: 224 76% 48%; /* deep brand blue */
-    --blob-3: 199 89% 48%; /* cyan-ish highlight */
+ --blob-1: 217 91% 60%;  /* bright blue */
+--blob-2: 224 76% 48%;  /* deep brand blue */
+--blob-3: 199 89% 48%;  /* cyan-ish highlight */
   }
 
   .dark {
@@ -192,7 +192,3 @@ All colors MUST be HSL.
   body::after {
     animation: none !important;
   }
-}
-body {
-  background: red !important;
-}
