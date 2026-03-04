@@ -162,7 +162,7 @@ const Index = () => {
       )}
 
       {screen === "report" && report && (
-        <ReportPage report={report} onBackToExplore={handleRestart} />
+        <ReportPage report={report} allFeatures={allFeatures} onBackToExplore={handleRestart} />
       )}
 
       {/* Selection summary pill */}
