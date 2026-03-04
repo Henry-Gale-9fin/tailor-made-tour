@@ -1,187 +1,82 @@
-import { useState, useEffect, useMemo } from "react";
-import { useOnboardingState } from "@/hooks/useOnboardingState";
-import { OnboardingStep } from "@/components/onboarding/OnboardingStep";
-import { SelectionSummary } from "@/components/onboarding/SelectionSummary";
-import { FeatureExploration } from "@/components/features/FeatureExploration";
-import { LoadingInterstitial } from "@/components/features/LoadingInterstitial";
-import { ReportPage } from "@/components/report/ReportPage";
-import { CompletionScreen } from "@/components/features/CompletionScreen";
-import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
-import { getFeaturesForFirmType, fetchAllFeatures, Feature } from "@/data/features";
-import { generateReport } from "@/data/mockReport";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { StepIndicator } from "./StepIndicator";
+import { SelectionChip } from "./SelectionChip";
+import { LucideIcon } from "lucide-react";
 
-type Step = "firm" | "seniority" | "usage" | "features" | "loading" | "report" | "complete";
+interface OnboardingStepProps {
+  title: string;
+  currentStep: number;
+  totalSteps: number;
+  options: { id: string; label: string; icon?: LucideIcon }[];
+  selectedValue?: string | null;
+  onSelect: (value: string) => void;
+  onBack?: () => void;
+  variant?: "default" | "card";
+}
 
-const Index = () => {
-  const {
-    state,
-    setFirmType,
-    setSeniority,
-    setUsage,
-    setFeatureFeedback,
-    clearFirmType,
-    clearSeniority,
-    clearUsage,
-    clearAll,
-  } = useOnboardingState();
-
-  const [currentStep, setCurrentStep] = useState<Step>("firm");
-  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
-
-  // Load features from DB
-  useEffect(() => {
-    fetchAllFeatures().then(setAllFeatures);
-  }, []);
-
-  const features = state.firmType ? getFeaturesForFirmType(state.firmType, allFeatures) : [];
-
-  // Check if all features have been reviewed
-  const allFeaturesReviewed = useMemo(() => {
-    if (features.length === 0) return false;
-    return features.every((f) => state.featureFeedback[f.id]);
-  }, [features, state.featureFeedback]);
-
-  // Determine current step based on state
-  useEffect(() => {
-    if (!state.firmType) {
-      setCurrentStep("firm");
-    } else if (!state.seniority) {
-      setCurrentStep("seniority");
-    } else if (!state.usage) {
-      setCurrentStep("usage");
-    } else if (currentStep !== "loading" && currentStep !== "report" && currentStep !== "complete") {
-      setCurrentStep("features");
-    }
-  }, [state.firmType, state.seniority, state.usage]);
-
-  const handleFirmTypeSelect = (value: string) => {
-    setFirmType(value);
-  };
-
-  const handleSenioritySelect = (value: string) => {
-    setSeniority(value);
-  };
-
-  const handleUsageSelect = (value: string) => {
-    setUsage(value);
-  };
-
-  // Auto-transition to loading when all features reviewed
-  const handleFeatureFeedback = (featureId: string, feedback: "Used" | "Seen" | "Unknown") => {
-    setFeatureFeedback(featureId, feedback);
-
-    const updatedFeedback = { ...state.featureFeedback, [featureId]: feedback };
-    const allReviewed = features.every((f) => updatedFeedback[f.id]);
-
-    if (allReviewed) {
-      localStorage.setItem("feature_review_completed_at", new Date().toISOString());
-      setCurrentStep("loading");
-    }
-  };
-
-  const handleLoadingComplete = () => {
-    setCurrentStep("report");
-  };
-
-  const handleBackToExplore = () => {
-    setCurrentStep("features");
-  };
-
-  const handleRestart = () => {
-    clearAll();
-    setCurrentStep("firm");
-  };
-
-  // Generate report data
-  const report = useMemo(() => {
-    return generateReport(state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures);
-  }, [state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures]);
-
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
+export const OnboardingStep = ({
+  title,
+  currentStep,
+  totalSteps,
+  options,
+  selectedValue,
+  onSelect,
+  onBack,
+  variant = "default",
+}: OnboardingStepProps) => {
   return (
-  <div className="min-h-screen text-foreground">
-    {/* Full-screen experiences stay full-bleed */}
-    {currentStep === "features" && (
-      <FeatureExploration
-        features={features}
-        featureFeedback={state.featureFeedback}
-        onFeedback={handleFeatureFeedback}
-        onBack={() => clearUsage()}
-      />
-    )}
+    <>
+      {/* Viewport-pinned controls (NOT inside the card) */}
+      {onBack && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-50"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      )}
 
-    {currentStep === "loading" && <LoadingInterstitial onComplete={handleLoadingComplete} />}
+      <div className="fixed top-6 right-6 flex items-center gap-3 z-50">
+        <span className="text-sm text-muted-foreground">
+          Step {currentStep} of {totalSteps}
+        </span>
+        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+      </div>
 
-    {currentStep === "report" && <ReportPage report={report} onBackToExplore={handleBackToExplore} />}
+      {/* Page content */}
+      <div className="w-full px-6 pt-24 pb-16">
+        <div
+          className={
+            variant === "card"
+              ? "relative mx-auto w-full max-w-6xl rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5"
+              : "relative mx-auto w-full max-w-6xl"
+          }
+        >
+          {variant === "card" && (
+            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+          )}
 
-    {currentStep === "complete" && <CompletionScreen onRestart={handleRestart} />}
+          <div className={variant === "card" ? "relative p-12" : "relative"}>
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">{title}</h1>
 
-    {/* Onboarding question steps in a centered callout card */}
-    {currentStep !== "features" &&
-      currentStep !== "loading" &&
-      currentStep !== "report" &&
-      currentStep !== "complete" && (
-        <div className="min-h-screen flex items-center justify-center px-6 py-16">
-          <div className="w-full max-w-5xl">
-            <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
-              {/* subtle top highlight like the reference */}
-              <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
-              <div className="relative p-8 md:p-12">
-                {currentStep === "firm" && (
-                  <OnboardingStep
-                    title="What type of firm do you work for?"
-                    currentStep={1}
-                    totalSteps={3}
-                    options={firmTypes}
-                    selectedValue={state.firmType}
-                    onSelect={handleFirmTypeSelect}
-                  />
-                )}
-
-                {currentStep === "seniority" && state.firmType && (
-                  <OnboardingStep
-                    title="What seniority are you?"
-                    currentStep={2}
-                    totalSteps={3}
-                    options={seniorityOptions[state.firmType] || []}
-                    selectedValue={state.seniority}
-                    onSelect={handleSenioritySelect}
-                    onBack={() => clearFirmType()}
-                  />
-                )}
-
-                {currentStep === "usage" && (
-                  <OnboardingStep
-                    title="How often do you use the platform?"
-                    currentStep={3}
-                    totalSteps={3}
-                    options={usageOptions}
-                    selectedValue={state.usage}
-                    onSelect={handleUsageSelect}
-                    onBack={() => clearSeniority()}
-                  />
-                )}
-
-                <div className="mt-8">
-                  <SelectionSummary
-                    state={state}
-                    onClearFirmType={clearFirmType}
-                    onClearSeniority={clearSeniority}
-                    onClearUsage={clearUsage}
-                    onClearAll={clearAll}
-                  />
-                </div>
-              </div>
+            <div className="flex flex-wrap justify-center gap-4">
+              {options.map((option) => (
+                <SelectionChip
+                  key={option.id}
+                  label={option.label}
+                  icon={option.icon}
+                  selected={selectedValue === option.id || selectedValue === option.label}
+                  onClick={() => onSelect(option.label)}
+                />
+              ))}
             </div>
           </div>
         </div>
-      )}
-  </div>
-);
-
+      </div>
+    </>
+  );
 };
-
-export default Index;
