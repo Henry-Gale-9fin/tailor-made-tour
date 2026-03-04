@@ -102,71 +102,84 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen text-foreground">
-      {currentStep === "firm" && (
-        <OnboardingStep
-          title="What type of firm do you work for?"
-          currentStep={1}
-          totalSteps={3}
-          options={firmTypes}
-          selectedValue={state.firmType}
-          onSelect={handleFirmTypeSelect}
-        />
+  <div className="min-h-screen text-foreground">
+    {/* Full-screen experiences stay full-bleed */}
+    {currentStep === "features" && (
+      <FeatureExploration
+        features={features}
+        featureFeedback={state.featureFeedback}
+        onFeedback={handleFeatureFeedback}
+        onBack={() => clearUsage()}
+      />
+    )}
+
+    {currentStep === "loading" && <LoadingInterstitial onComplete={handleLoadingComplete} />}
+
+    {currentStep === "report" && <ReportPage report={report} onBackToExplore={handleBackToExplore} />}
+
+    {currentStep === "complete" && <CompletionScreen onRestart={handleRestart} />}
+
+    {/* Onboarding question steps in a centered callout card */}
+    {currentStep !== "features" &&
+      currentStep !== "loading" &&
+      currentStep !== "report" &&
+      currentStep !== "complete" && (
+        <div className="min-h-screen flex items-center justify-center px-6 py-16">
+          <div className="w-full max-w-5xl">
+            <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
+              {/* subtle top highlight like the reference */}
+              <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+              <div className="relative p-8 md:p-12">
+                {currentStep === "firm" && (
+                  <OnboardingStep
+                    title="What type of firm do you work for?"
+                    currentStep={1}
+                    totalSteps={3}
+                    options={firmTypes}
+                    selectedValue={state.firmType}
+                    onSelect={handleFirmTypeSelect}
+                  />
+                )}
+
+                {currentStep === "seniority" && state.firmType && (
+                  <OnboardingStep
+                    title="What seniority are you?"
+                    currentStep={2}
+                    totalSteps={3}
+                    options={seniorityOptions[state.firmType] || []}
+                    selectedValue={state.seniority}
+                    onSelect={handleSenioritySelect}
+                    onBack={() => clearFirmType()}
+                  />
+                )}
+
+                {currentStep === "usage" && (
+                  <OnboardingStep
+                    title="How often do you use the platform?"
+                    currentStep={3}
+                    totalSteps={3}
+                    options={usageOptions}
+                    selectedValue={state.usage}
+                    onSelect={handleUsageSelect}
+                    onBack={() => clearSeniority()}
+                  />
+                )}
+
+                <div className="mt-8">
+                  <SelectionSummary
+                    state={state}
+                    onClearFirmType={clearFirmType}
+                    onClearSeniority={clearSeniority}
+                    onClearUsage={clearUsage}
+                    onClearAll={clearAll}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
-
-      {currentStep === "seniority" && state.firmType && (
-        <OnboardingStep
-          title="What seniority are you?"
-          currentStep={2}
-          totalSteps={3}
-          options={seniorityOptions[state.firmType] || []}
-          selectedValue={state.seniority}
-          onSelect={handleSenioritySelect}
-          onBack={() => clearFirmType()}
-        />
-      )}
-
-      {currentStep === "usage" && (
-        <OnboardingStep
-          title="How often do you use the platform?"
-          currentStep={3}
-          totalSteps={3}
-          options={usageOptions}
-          selectedValue={state.usage}
-          onSelect={handleUsageSelect}
-          onBack={() => clearSeniority()}
-        />
-      )}
-
-      {currentStep === "features" && (
-        <FeatureExploration
-          features={features}
-          featureFeedback={state.featureFeedback}
-          onFeedback={handleFeatureFeedback}
-          onBack={() => clearUsage()}
-        />
-      )}
-
-      {currentStep === "loading" && <LoadingInterstitial onComplete={handleLoadingComplete} />}
-
-      {currentStep === "report" && <ReportPage report={report} onBackToExplore={handleBackToExplore} />}
-
-      {currentStep === "complete" && <CompletionScreen onRestart={handleRestart} />}
-
-      {currentStep !== "complete" &&
-        currentStep !== "features" &&
-        currentStep !== "loading" &&
-        currentStep !== "report" && (
-          <SelectionSummary
-            state={state}
-            onClearFirmType={clearFirmType}
-            onClearSeniority={clearSeniority}
-            onClearUsage={clearUsage}
-            onClearAll={clearAll}
-          />
-        )}
-    </div>
-  );
-};
+  </div>
+);
 
 export default Index;
