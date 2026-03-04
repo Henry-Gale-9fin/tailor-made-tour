@@ -1,82 +1,194 @@
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { StepIndicator } from "./StepIndicator";
-import { SelectionChip } from "./SelectionChip";
-import { LucideIcon } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { useOnboardingState } from "@/hooks/useOnboardingState";
+import { OnboardingStep } from "@/components/onboarding/OnboardingStep";
+import { SelectionSummary } from "@/components/onboarding/SelectionSummary";
+import { FeatureExploration } from "@/components/features/FeatureExploration";
+import { LoadingInterstitial } from "@/components/features/LoadingInterstitial";
+import { ReportPage } from "@/components/report/ReportPage";
+import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
+import { fetchAllFeatures, getFeaturesForFirmType, Feature } from "@/data/features";
+import { generateReport, ReportData } from "@/data/mockReport";
 
-interface OnboardingStepProps {
-  title: string;
-  currentStep: number;
-  totalSteps: number;
-  options: { id: string; label: string; icon?: LucideIcon }[];
-  selectedValue?: string | null;
-  onSelect: (value: string) => void;
-  onBack?: () => void;
-  variant?: "default" | "card";
-}
+type Screen = "firmType" | "seniority" | "usage" | "features" | "loading" | "report";
 
-export const OnboardingStep = ({
-  title,
-  currentStep,
-  totalSteps,
-  options,
-  selectedValue,
-  onSelect,
-  onBack,
-  variant = "default",
-}: OnboardingStepProps) => {
+const Index = () => {
+  const {
+    state,
+    setFirmType,
+    setSeniority,
+    setUsage,
+    setFeatureFeedback,
+    clearFirmType,
+    clearSeniority,
+    clearUsage,
+    clearAll,
+  } = useOnboardingState();
+
+  const [screen, setScreen] = useState<Screen>("firmType");
+  const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
+  const [relevantFeatures, setRelevantFeatures] = useState<Feature[]>([]);
+  const [report, setReport] = useState<ReportData | null>(null);
+
+  // Add dark class
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
+
+  // Load features from database
+  useEffect(() => {
+    fetchAllFeatures().then(setAllFeatures);
+  }, []);
+
+  // Compute relevant features when firm type changes
+  useEffect(() => {
+    if (state.firmType && allFeatures.length > 0) {
+      setRelevantFeatures(getFeaturesForFirmType(state.firmType, allFeatures));
+    }
+  }, [state.firmType, allFeatures]);
+
+  const handleFirmTypeSelect = (value: string) => {
+    setFirmType(value);
+    setTimeout(() => setScreen("seniority"), 300);
+  };
+
+  const handleSenioritySelect = (value: string) => {
+    setSeniority(value);
+    setTimeout(() => setScreen("usage"), 300);
+  };
+
+  const handleUsageSelect = (value: string) => {
+    setUsage(value);
+    setTimeout(() => setScreen("features"), 300);
+  };
+
+  const handleFeatureBack = () => {
+    setScreen("usage");
+  };
+
+  const handleAllFeaturesReviewed = useCallback(() => {
+    // Check if all relevant features have feedback
+    const allReviewed = relevantFeatures.every(
+      (f) => state.featureFeedback[f.id]
+    );
+    if (allReviewed && relevantFeatures.length > 0) {
+      setScreen("loading");
+    }
+  }, [relevantFeatures, state.featureFeedback]);
+
+  // Watch for all features reviewed
+  useEffect(() => {
+    if (screen === "features") {
+      handleAllFeaturesReviewed();
+    }
+  }, [screen, state.featureFeedback, handleAllFeaturesReviewed]);
+
+  const handleLoadingComplete = useCallback(() => {
+    const reportData = generateReport(
+      state.firmType,
+      state.seniority,
+      state.usage,
+      state.featureFeedback,
+      allFeatures
+    );
+    setReport(reportData);
+    setScreen("report");
+  }, [state, allFeatures]);
+
+  const handleRestart = () => {
+    clearAll();
+    setReport(null);
+    setScreen("firmType");
+  };
+
+  const totalOnboardingSteps = 3;
+
   return (
-    <>
-      {/* Viewport-pinned controls (NOT inside the card) */}
-      {onBack && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-50"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      {screen === "firmType" && (
+        <OnboardingStep
+          title="What type of firm are you at?"
+          currentStep={1}
+          totalSteps={totalOnboardingSteps}
+          options={firmTypes}
+          selectedValue={state.firmType}
+          onSelect={handleFirmTypeSelect}
+          variant="card"
+        />
       )}
 
-      <div className="fixed top-6 right-6 flex items-center gap-3 z-50">
-        <span className="text-sm text-muted-foreground">
-          Step {currentStep} of {totalSteps}
-        </span>
-        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
-      </div>
+      {screen === "seniority" && state.firmType && (
+        <OnboardingStep
+          title="What is your seniority level?"
+          currentStep={2}
+          totalSteps={totalOnboardingSteps}
+          options={seniorityOptions[state.firmType] || []}
+          selectedValue={state.seniority}
+          onSelect={handleSenioritySelect}
+          onBack={() => {
+            clearFirmType();
+            setScreen("firmType");
+          }}
+          variant="card"
+        />
+      )}
 
-      {/* Page content */}
-      <div className="w-full px-6 pt-24 pb-16">
-        <div
-          className={
-            variant === "card"
-              ? "relative mx-auto w-full max-w-6xl rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5"
-              : "relative mx-auto w-full max-w-6xl"
-          }
-        >
-          {variant === "card" && (
-            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
-          )}
+      {screen === "usage" && (
+        <OnboardingStep
+          title="How often do you use 9fin?"
+          currentStep={3}
+          totalSteps={totalOnboardingSteps}
+          options={usageOptions}
+          selectedValue={state.usage}
+          onSelect={handleUsageSelect}
+          onBack={() => {
+            clearSeniority();
+            setScreen("seniority");
+          }}
+          variant="card"
+        />
+      )}
 
-          <div className={variant === "card" ? "relative p-12" : "relative"}>
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">{title}</h1>
+      {screen === "features" && (
+        <FeatureExploration
+          features={relevantFeatures}
+          featureFeedback={state.featureFeedback}
+          onFeedback={setFeatureFeedback}
+          onBack={handleFeatureBack}
+        />
+      )}
 
-            <div className="flex flex-wrap justify-center gap-4">
-              {options.map((option) => (
-                <SelectionChip
-                  key={option.id}
-                  label={option.label}
-                  icon={option.icon}
-                  selected={selectedValue === option.id || selectedValue === option.label}
-                  onClick={() => onSelect(option.label)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+      {screen === "loading" && (
+        <LoadingInterstitial onComplete={handleLoadingComplete} />
+      )}
+
+      {screen === "report" && report && (
+        <ReportPage report={report} onBackToExplore={handleRestart} />
+      )}
+
+      {/* Selection summary pill */}
+      {(screen === "firmType" || screen === "seniority" || screen === "usage") && (
+        <SelectionSummary
+          state={state}
+          onClearFirmType={() => {
+            clearFirmType();
+            setScreen("firmType");
+          }}
+          onClearSeniority={() => {
+            clearSeniority();
+            setScreen("seniority");
+          }}
+          onClearUsage={() => {
+            clearUsage();
+            setScreen("usage");
+          }}
+          onClearAll={() => {
+            clearAll();
+            setScreen("firmType");
+          }}
+        />
+      )}
+    </div>
   );
 };
+
+export default Index;
