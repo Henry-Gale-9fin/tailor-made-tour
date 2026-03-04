@@ -103,8 +103,12 @@ const Index = () => {
     );
   }, [state.firmType, state.seniority, state.usage, state.featureFeedback, allFeatures]);
 
+  useEffect(() => {
+    document.documentElement.classList.add('dark');
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background text-foreground dark">
+    <div className="min-h-screen bg-background text-foreground">
       {currentStep === "firm" && (
         <OnboardingStep
           title="What type of firm do you work for?"

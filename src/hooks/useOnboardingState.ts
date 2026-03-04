@@ -35,15 +35,15 @@ export const useOnboardingState = () => {
   }, []);
 
   const clearFirmType = useCallback(() => {
-    setState(prev => ({ ...prev, firmType: null, seniority: null }));
+    setState(prev => ({ ...prev, firmType: null, seniority: null, featureFeedback: {} }));
   }, []);
 
   const clearSeniority = useCallback(() => {
-    setState(prev => ({ ...prev, seniority: null }));
+    setState(prev => ({ ...prev, seniority: null, featureFeedback: {} }));
   }, []);
 
   const clearUsage = useCallback(() => {
-    setState(prev => ({ ...prev, usage: null }));
+    setState(prev => ({ ...prev, usage: null, featureFeedback: {} }));
   }, []);
 
   const clearAll = useCallback(() => {
