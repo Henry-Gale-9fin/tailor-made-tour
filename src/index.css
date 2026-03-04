@@ -136,9 +136,9 @@ All colors MUST be HSL.
   .dark #root::before {
     opacity: 0.95;
     background:
-      radial-gradient(circle at 20% 30%, hsl(224 76% 48% / 0.6), transparent 45%),
-      radial-gradient(circle at 80% 40%, hsl(217 60% 22% / 0.55), transparent 50%),
-      radial-gradient(circle at 55% 85%, hsl(217 91% 60% / 0.45), transparent 55%);
+      radial-gradient(circle at 20% 30%, hsl(330 80% 50% / 0.6), transparent 45%),
+      radial-gradient(circle at 80% 40%, hsl(310 60% 40% / 0.55), transparent 50%),
+      radial-gradient(circle at 55% 85%, hsl(340 91% 60% / 0.45), transparent 55%);
     animation: blobMove1 11s ease-in-out infinite alternate;
   }
 
@@ -146,8 +146,8 @@ All colors MUST be HSL.
     opacity: 0.6;
     mix-blend-mode: screen;
     background:
-      radial-gradient(circle at 30% 70%, hsl(224 76% 48% / 0.45), transparent 55%),
-      radial-gradient(circle at 75% 20%, hsl(217 60% 22% / 0.45), transparent 55%);
+      radial-gradient(circle at 30% 70%, hsl(320 76% 48% / 0.45), transparent 55%),
+      radial-gradient(circle at 75% 20%, hsl(340 60% 50% / 0.45), transparent 55%);
     animation: blobMove2 14s ease-in-out infinite alternate;
   }
 
