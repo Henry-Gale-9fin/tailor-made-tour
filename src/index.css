@@ -193,3 +193,6 @@ All colors MUST be HSL.
     animation: none !important;
   }
 }
+body {
+  background: red !important;
+}
