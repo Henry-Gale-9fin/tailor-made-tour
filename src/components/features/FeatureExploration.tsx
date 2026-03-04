@@ -47,69 +47,80 @@ export const FeatureExploration = ({
     setCurrentIndex(index);
   };
 
-  return (
-    <div className="relative flex flex-col min-h-screen p-8 pb-12">
-      {/* Fixed Top-Left Back Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-10"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back
-      </Button>
+ return (
+  <div className="relative min-h-screen px-6 py-10">
+    {/* Fixed Top-Left Back Button */}
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={onBack}
+      className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-50"
+    >
+      <ArrowLeft className="w-4 h-4 mr-2" />
+      Back
+    </Button>
 
-      {/* Fixed Top-Right Progress */}
-      <div className="fixed top-6 right-6 text-sm text-muted-foreground z-10">
-        {reviewedCount} of {features.length} features reviewed
-      </div>
+    {/* Fixed Top-Right Progress */}
+    <div className="fixed top-6 right-6 text-sm text-muted-foreground z-50">
+      {reviewedCount} of {features.length} features reviewed
+    </div>
 
-      {/* Title */}
-      <div className="text-center mb-8 mt-12">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
-        <p className="text-muted-foreground">
-          Which features have you used, seen, or are unknown to you?
-        </p>
-      </div>
+    {/* Centered glass panel */}
+    <div className="min-h-screen flex items-center justify-center pt-16 pb-10">
+      <div className="w-full max-w-6xl">
+        <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
+          {/* subtle highlight overlay */}
+          <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
 
-      {/* Feature Card - Split Layout */}
-      <div className="flex justify-center px-4">
-        <FeatureCard feature={currentFeature} />
-      </div>
+          <div className="relative p-8 md:p-12">
+            {/* Title */}
+            <div className="text-center mb-10">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
+              <p className="text-muted-foreground">
+                Which features have you used, seen, or are unknown to you?
+              </p>
+            </div>
 
-      {/* Feedback Buttons - Enhanced */}
-      <div className="flex justify-center gap-4 mt-8 mb-8">
-        <button
-          onClick={() => handleFeedback("Used")}
-          className="w-32 py-4 rounded-xl font-semibold
-                     border-2 border-success/30 bg-success/5 text-success
-                     hover:border-success hover:bg-success/10 hover:scale-105
-                     active:scale-95 transition-all duration-200"
-        >
-          Used
-        </button>
-        
-        <button
-          onClick={() => handleFeedback("Seen")}
-          className="w-32 py-4 rounded-xl font-semibold
-                     border-2 border-primary/30 bg-primary/5 text-primary
-                     hover:border-primary hover:bg-primary/10 hover:scale-105
-                     active:scale-95 transition-all duration-200"
-        >
-          Seen
-        </button>
-        
-        <button
-          onClick={() => handleFeedback("Unknown")}
-          className="w-32 py-4 rounded-xl font-semibold
-                     border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
-                     hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
-                     active:scale-95 transition-all duration-200"
-        >
-          Unknown
-        </button>
+            {/* Feature Card */}
+            <div className="flex justify-center px-4">
+              <FeatureCard feature={currentFeature} />
+            </div>
+
+            {/* Feedback Buttons */}
+            <div className="flex justify-center gap-4 mt-10">
+              <button
+                onClick={() => handleFeedback("Used")}
+                className="w-32 py-4 rounded-xl font-semibold
+                           border-2 border-success/30 bg-success/5 text-success
+                           hover:border-success hover:bg-success/10 hover:scale-105
+                           active:scale-95 transition-all duration-200"
+              >
+                Used
+              </button>
+
+              <button
+                onClick={() => handleFeedback("Seen")}
+                className="w-32 py-4 rounded-xl font-semibold
+                           border-2 border-primary/30 bg-primary/5 text-primary
+                           hover:border-primary hover:bg-primary/10 hover:scale-105
+                           active:scale-95 transition-all duration-200"
+              >
+                Seen
+              </button>
+
+              <button
+                onClick={() => handleFeedback("Unknown")}
+                className="w-32 py-4 rounded-xl font-semibold
+                           border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
+                           hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
+                           active:scale-95 transition-all duration-200"
+              >
+                Unknown
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  );
-};
+  </div>
+);
