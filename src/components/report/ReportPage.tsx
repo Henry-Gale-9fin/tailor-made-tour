@@ -33,8 +33,7 @@ export const ReportPage = ({ report, allFeatures, onBackToExplore }: ReportPageP
 
   return (
     <div className="min-h-screen">
-      {/* Sticky Back Button Bar */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/20 px-6 py-4">
+      <div className="max-w-5xl mx-auto px-6 md:px-8 pt-8">
         <Button
           variant="ghost"
           size="sm"
