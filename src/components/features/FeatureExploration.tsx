@@ -67,11 +67,11 @@ export const FeatureExploration = ({
 
       {/* Centered glass panel */}
       <div className="h-full flex items-center justify-center pt-16 pb-6">
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-5xl">
           <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
             <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
 
-            <div className="relative p-8 md:p-12">
+            <div className="relative p-6 md:p-10">
               {/* Title */}
               <div className="text-center mb-8">
                 <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
