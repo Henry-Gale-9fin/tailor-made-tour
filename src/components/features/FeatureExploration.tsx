@@ -98,9 +98,9 @@ export const FeatureExploration = ({
             </p>
             <div className="flex justify-center gap-4">
               {([
-                { label: "Never", feedback: "Unknown" as const },
-                { label: "Tried", feedback: "Seen" as const },
                 { label: "Use", feedback: "Used" as const },
+                { label: "Tried", feedback: "Seen" as const },
+                { label: "Never", feedback: "Unknown" as const },
               ]).map(({ label, feedback }) => (
                 <button
                   key={feedback}
