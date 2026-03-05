@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 interface FeatureExplorationProps {
   features: Feature[];
@@ -18,6 +19,7 @@ export const FeatureExploration = ({
   onBack,
 }: FeatureExplorationProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const reducedMotion = useReducedMotion();
 
   const reviewedCount = Object.keys(featureFeedback).filter(id =>
     features.some(f => f.id === id)
@@ -35,16 +37,24 @@ export const FeatureExploration = ({
 
   const handleFeedback = (feedback: "Used" | "Seen" | "Unknown") => {
     onFeedback(currentFeature.id, feedback);
-    
-    // Move to next feature if not the last one
-    // (auto-transition to loading is handled by parent when all features reviewed)
     if (currentIndex < features.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
 
-  const goToFeature = (index: number) => {
-    setCurrentIndex(index);
+  const cardVariants = {
+    enter: {
+      x: reducedMotion ? 0 : 30,
+      opacity: 0,
+    },
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: {
+      x: reducedMotion ? 0 : -30,
+      opacity: 0,
+    },
   };
 
   return (
@@ -80,43 +90,55 @@ export const FeatureExploration = ({
                 </p>
               </div>
 
-              {/* Feature Card */}
-              <div className="flex justify-center px-4">
-                <FeatureCard feature={currentFeature} />
-              </div>
-
-              {/* Feedback Buttons */}
-              <div className="flex justify-center gap-4 mt-8">
-                <button
-                  onClick={() => handleFeedback("Used")}
-                  className="w-32 py-4 rounded-xl font-semibold
-                             border-2 border-success/30 bg-success/5 text-success
-                             hover:border-success hover:bg-success/10 hover:scale-105
-                             active:scale-95 transition-all duration-200"
+              {/* Animated Feature Card + Buttons */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  Used
-                </button>
+                  {/* Feature Card */}
+                  <div className="flex justify-center px-4">
+                    <FeatureCard feature={currentFeature} />
+                  </div>
 
-                <button
-                  onClick={() => handleFeedback("Seen")}
-                  className="w-32 py-4 rounded-xl font-semibold
-                             border-2 border-primary/30 bg-primary/5 text-primary
-                             hover:border-primary hover:bg-primary/10 hover:scale-105
-                             active:scale-95 transition-all duration-200"
-                >
-                  Seen
-                </button>
+                  {/* Feedback Buttons */}
+                  <div className="flex justify-center gap-4 mt-8">
+                    <button
+                      onClick={() => handleFeedback("Used")}
+                      className="w-32 py-4 rounded-xl font-semibold
+                                 border-2 border-success/30 bg-success/5 text-success
+                                 hover:border-success hover:bg-success/10 hover:scale-105
+                                 active:scale-95 transition-all duration-200"
+                    >
+                      Used
+                    </button>
 
-                <button
-                  onClick={() => handleFeedback("Unknown")}
-                  className="w-32 py-4 rounded-xl font-semibold
-                             border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
-                             hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
-                             active:scale-95 transition-all duration-200"
-                >
-                  Unknown
-                </button>
-              </div>
+                    <button
+                      onClick={() => handleFeedback("Seen")}
+                      className="w-32 py-4 rounded-xl font-semibold
+                                 border-2 border-primary/30 bg-primary/5 text-primary
+                                 hover:border-primary hover:bg-primary/10 hover:scale-105
+                                 active:scale-95 transition-all duration-200"
+                    >
+                      Seen
+                    </button>
+
+                    <button
+                      onClick={() => handleFeedback("Unknown")}
+                      className="w-32 py-4 rounded-xl font-semibold
+                                 border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
+                                 hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
+                                 active:scale-95 transition-all duration-200"
+                    >
+                      Unknown
+                    </button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
