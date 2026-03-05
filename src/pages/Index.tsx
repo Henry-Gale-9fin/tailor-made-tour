@@ -116,97 +116,107 @@ const Index = () => {
 
   const totalOnboardingSteps = 3;
 
-  const variants = {
-    enter: (dir: number) => ({
-      x: reducedMotion ? 0 : dir * 40,
+  const contentVariants = {
+    enter: {
+      y: reducedMotion ? 0 : 12,
       opacity: 0,
       scale: reducedMotion ? 1 : 0.98,
-    }),
+    },
     center: {
-      x: 0,
+      y: 0,
       opacity: 1,
       scale: 1,
     },
-    exit: (dir: number) => ({
-      x: reducedMotion ? 0 : dir * -40,
+    exit: {
+      y: reducedMotion ? 0 : -8,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.98,
-    }),
+      scale: 1,
+    },
+  };
+
+  const renderScreenContent = () => {
+    switch (screen) {
+      case "firmType":
+        return (
+          <OnboardingStep
+            title="What type of firm are you at?"
+            currentStep={1}
+            totalSteps={totalOnboardingSteps}
+            options={firmTypes}
+            selectedValue={state.firmType}
+            onSelect={handleFirmTypeSelect}
+            variant="card"
+          />
+        );
+      case "seniority":
+        return state.firmType ? (
+          <OnboardingStep
+            title="What is your seniority level?"
+            currentStep={2}
+            totalSteps={totalOnboardingSteps}
+            options={seniorityOptions[state.firmType] || []}
+            selectedValue={state.seniority}
+            onSelect={handleSenioritySelect}
+            onBack={() => {
+              clearFirmType();
+              goBack("firmType");
+            }}
+            variant="card"
+          />
+        ) : null;
+      case "usage":
+        return (
+          <OnboardingStep
+            title="How often do you use 9fin?"
+            currentStep={3}
+            totalSteps={totalOnboardingSteps}
+            options={usageOptions}
+            selectedValue={state.usage}
+            onSelect={handleUsageSelect}
+            onBack={() => {
+              clearSeniority();
+              goBack("seniority");
+            }}
+            variant="card"
+          />
+        );
+      case "features":
+        return (
+          <FeatureExploration
+            features={relevantFeatures}
+            featureFeedback={state.featureFeedback}
+            onFeedback={setFeatureFeedback}
+            onBack={handleFeatureBack}
+          />
+        );
+      case "loading":
+        return <LoadingInterstitial onComplete={handleLoadingComplete} />;
+      case "report":
+        return report ? (
+          <ReportPage report={report} allFeatures={allFeatures} onBackToExplore={handleRestart} />
+        ) : null;
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <AnimatePresence mode="wait" custom={direction}>
+    <div className="h-screen overflow-hidden flex flex-col items-center justify-center">
+      <AnimatePresence mode="wait">
         <motion.div
           key={screen}
-          custom={direction}
-          variants={variants}
+          variants={contentVariants}
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{
+            duration: 0.25,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="w-full flex flex-col items-center justify-center"
+          style={{ willChange: "transform, opacity" }}
         >
-          {screen === "firmType" && (
-            <OnboardingStep
-              title="What type of firm are you at?"
-              currentStep={1}
-              totalSteps={totalOnboardingSteps}
-              options={firmTypes}
-              selectedValue={state.firmType}
-              onSelect={handleFirmTypeSelect}
-              variant="card"
-            />
-          )}
-
-          {screen === "seniority" && state.firmType && (
-            <OnboardingStep
-              title="What is your seniority level?"
-              currentStep={2}
-              totalSteps={totalOnboardingSteps}
-              options={seniorityOptions[state.firmType] || []}
-              selectedValue={state.seniority}
-              onSelect={handleSenioritySelect}
-              onBack={() => {
-                clearFirmType();
-                goBack("firmType");
-              }}
-              variant="card"
-            />
-          )}
-
-          {screen === "usage" && (
-            <OnboardingStep
-              title="How often do you use 9fin?"
-              currentStep={3}
-              totalSteps={totalOnboardingSteps}
-              options={usageOptions}
-              selectedValue={state.usage}
-              onSelect={handleUsageSelect}
-              onBack={() => {
-                clearSeniority();
-                goBack("seniority");
-              }}
-              variant="card"
-            />
-          )}
-
-          {screen === "features" && (
-            <FeatureExploration
-              features={relevantFeatures}
-              featureFeedback={state.featureFeedback}
-              onFeedback={setFeatureFeedback}
-              onBack={handleFeatureBack}
-            />
-          )}
-
-          {screen === "loading" && (
-            <LoadingInterstitial onComplete={handleLoadingComplete} />
-          )}
-
-          {screen === "report" && report && (
-            <ReportPage report={report} allFeatures={allFeatures} onBackToExplore={handleRestart} />
-          )}
+          {renderScreenContent()}
         </motion.div>
       </AnimatePresence>
 
