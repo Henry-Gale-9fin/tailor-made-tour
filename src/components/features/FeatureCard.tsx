@@ -40,7 +40,7 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
           {/* LEFT: Media */}
           <div className="flex flex-col">
             <div className="bg-muted/30 rounded-xl border border-border/30 overflow-hidden h-full">
-              <div className="aspect-video w-full h-full">
+            <div className="aspect-video w-full overflow-hidden">
                 {feature.videoSrc ? (
                   <video
                     src={feature.videoSrc}
@@ -56,7 +56,8 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
                   <img
                     src={feature.image_url || "/placeholder.svg"}
                     alt={feature.name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
+                    loading="eager"
                   />
                 )}
               </div>

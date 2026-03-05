@@ -101,7 +101,7 @@ export const FeatureExploration = ({
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   {/* Feature Card */}
                   <div className="flex justify-center px-4">
