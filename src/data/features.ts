@@ -110,18 +110,83 @@ const firmTypeKeyMap: Record<string, string> = {
   "Advisors": "advisors",
 };
 
-export const getFeaturesForFirmType = (firmType: string, allFeatures: Feature[]): Feature[] => {
-  const key = firmTypeKeyMap[firmType] || "markets";
+// Enhanced: Get user's team from onboarding
+export const getUserTeam = (firmType: string, seniority: string | null): string | null => {
+  // Extract team from seniority (format: "Team - Level")
+  if (!seniority) return null;
+  const parts = seniority.split(" - ");
+  return parts.length > 1 ? parts[0].trim() : null;
+};
 
+// Enhanced: Calculate feature relevance score (0-100)
+export const calculateFeatureRelevance = (
+  feature: Feature,
+  firmType: string,
+  userTeam: string | null,
+  seniority: string | null
+): number => {
+  const key = firmTypeKeyMap[firmType] || "markets";
+  const relevance = featureRelevanceMatrix[feature.id];
+  
+  if (!relevance || !relevance[key]) return 0;
+  
+  const teams = relevance[key];
+  if (teams.length === 0) return 0;
+  
+  let score = 0;
+  
+  // Base score: Feature is relevant to this firm type (20 points)
+  score += 20;
+  
+  // Team match: Feature is relevant to user's specific team (60 points)
+  if (userTeam && teams.some(t => t.toLowerCase().includes(userTeam.toLowerCase()) || userTeam.toLowerCase().includes(t.toLowerCase()))) {
+    score += 60;
+  } else {
+    // No team match: Give partial credit based on breadth (10-30 points)
+    score += Math.min(30, teams.length * 5);
+  }
+  
+  // Seniority bonus: Senior users get priority on strategic features (20 points)
+  if (seniority) {
+    const seniorityLevel = seniority.toLowerCase();
+    const strategicCategories = ["ai", "analytics", "market intelligence"];
+    const executionCategories = ["data", "search", "document management"];
+    
+    if (seniorityLevel.includes("partner") || seniorityLevel.includes("managing director") || seniorityLevel.includes("director")) {
+      // Senior: Prioritize strategic features
+      if (strategicCategories.some(cat => feature.category?.toLowerCase().includes(cat))) {
+        score += 20;
+      }
+    } else if (seniorityLevel.includes("associate") || seniorityLevel.includes("analyst")) {
+      // Junior: Prioritize execution features
+      if (executionCategories.some(cat => feature.category?.toLowerCase().includes(cat))) {
+        score += 20;
+      }
+    } else {
+      // Mid-level: Balanced bonus
+      score += 10;
+    }
+  }
+  
+  return Math.min(100, score);
+};
+
+// Enhanced: Get top 5 features based on comprehensive scoring
+export const getFeaturesForFirmType = (
+  firmType: string,
+  allFeatures: Feature[],
+  seniority: string | null = null
+): Feature[] => {
+  const userTeam = getUserTeam(firmType, seniority);
+  
   const scored = allFeatures.map(f => {
-    const relevance = featureRelevanceMatrix[f.id];
-    const teamCount = relevance?.[key]?.length || 0;
-    return { feature: f, teamCount };
+    const relevanceScore = calculateFeatureRelevance(f, firmType, userTeam, seniority);
+    return { feature: f, score: relevanceScore };
   });
 
   return scored
-    .filter(s => s.teamCount > 0)
-    .sort((a, b) => b.teamCount - a.teamCount)
+    .filter(s => s.score > 0)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 5)
     .map(s => s.feature);
 };

@@ -9,6 +9,9 @@ import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
 import { fetchAllFeatures, getFeaturesForFirmType, Feature } from "@/data/features";
 import { generateReport, ReportData } from "@/data/mockReport";
+// Enhanced imports (uncomment to activate enhanced logic)
+// import { getFeaturesEnhanced } from "@/data/featuresEnhanced";
+// import { generateEnhancedReport } from "@/data/enhancedReport";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,12 +48,12 @@ const Index = () => {
     fetchAllFeatures().then(setAllFeatures);
   }, []);
 
-  // Compute relevant features when firm type changes
+  // Compute relevant features when firm type or seniority changes
   useEffect(() => {
     if (state.firmType && allFeatures.length > 0) {
-      setRelevantFeatures(getFeaturesForFirmType(state.firmType, allFeatures));
+      setRelevantFeatures(getFeaturesForFirmType(state.firmType, allFeatures, state.seniority));
     }
-  }, [state.firmType, allFeatures]);
+  }, [state.firmType, state.seniority, allFeatures]);
 
   const goForward = (next: Screen) => {
     setDirection(1);
