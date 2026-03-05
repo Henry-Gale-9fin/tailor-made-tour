@@ -40,12 +40,25 @@ export const FeatureCard = ({ feature }: FeatureCardProps) => {
           {/* LEFT: Media */}
           <div className="flex flex-col">
             <div className="bg-muted/30 rounded-xl border border-border/30 overflow-hidden h-full">
-              <div className="aspect-[4/3] w-full h-full">
-                <img
-                  src={feature.image_url || "/placeholder.svg"}
-                  alt={feature.name}
-                  className="w-full h-full object-contain"
-                />
+              <div className="aspect-video w-full h-full">
+                {feature.videoSrc ? (
+                  <video
+                    src={feature.videoSrc}
+                    poster={feature.posterSrc || feature.image_url || undefined}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img
+                    src={feature.image_url || "/placeholder.svg"}
+                    alt={feature.name}
+                    className="w-full h-full object-contain"
+                  />
+                )}
               </div>
             </div>
           </div>
