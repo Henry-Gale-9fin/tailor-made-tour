@@ -8,6 +8,7 @@ import { ReportPage } from "@/components/report/ReportPage";
 import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
 import { fetchAllFeatures, getFeaturesForFirmType, Feature } from "@/data/features";
 import { generateReport, ReportData } from "@/data/mockReport";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 type Screen = "firmType" | "seniority" | "usage" | "features" | "loading" | "report";
 
@@ -25,9 +26,11 @@ const Index = () => {
   } = useOnboardingState();
 
   const [screen, setScreen] = useState<Screen>("firmType");
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [allFeatures, setAllFeatures] = useState<Feature[]>([]);
   const [relevantFeatures, setRelevantFeatures] = useState<Feature[]>([]);
   const [report, setReport] = useState<ReportData | null>(null);
+  const reducedMotion = useReducedMotion();
 
   // Add dark class
   useEffect(() => {
@@ -46,32 +49,41 @@ const Index = () => {
     }
   }, [state.firmType, allFeatures]);
 
+  const goForward = (next: Screen) => {
+    setDirection(1);
+    setTimeout(() => setScreen(next), 0);
+  };
+
+  const goBack = (prev: Screen) => {
+    setDirection(-1);
+    setTimeout(() => setScreen(prev), 0);
+  };
+
   const handleFirmTypeSelect = (value: string) => {
     setFirmType(value);
-    setTimeout(() => setScreen("seniority"), 300);
+    setTimeout(() => goForward("seniority"), 300);
   };
 
   const handleSenioritySelect = (value: string) => {
     setSeniority(value);
-    setTimeout(() => setScreen("usage"), 300);
+    setTimeout(() => goForward("usage"), 300);
   };
 
   const handleUsageSelect = (value: string) => {
     setUsage(value);
-    setTimeout(() => setScreen("features"), 300);
+    setTimeout(() => goForward("features"), 300);
   };
 
   const handleFeatureBack = () => {
-    setScreen("usage");
+    goBack("usage");
   };
 
   const handleAllFeaturesReviewed = useCallback(() => {
-    // Check if all relevant features have feedback
     const allReviewed = relevantFeatures.every(
       (f) => state.featureFeedback[f.id]
     );
     if (allReviewed && relevantFeatures.length > 0) {
-      setScreen("loading");
+      goForward("loading");
     }
   }, [relevantFeatures, state.featureFeedback]);
 
@@ -91,98 +103,136 @@ const Index = () => {
       allFeatures
     );
     setReport(reportData);
+    setDirection(1);
     setScreen("report");
   }, [state, allFeatures]);
 
   const handleRestart = () => {
     clearAll();
     setReport(null);
+    setDirection(-1);
     setScreen("firmType");
   };
 
   const totalOnboardingSteps = 3;
 
+  const variants = {
+    enter: (dir: number) => ({
+      x: reducedMotion ? 0 : dir * 40,
+      opacity: 0,
+      scale: reducedMotion ? 1 : 0.98,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (dir: number) => ({
+      x: reducedMotion ? 0 : dir * -40,
+      opacity: 0,
+      scale: reducedMotion ? 1 : 0.98,
+    }),
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
-      {screen === "firmType" && (
-        <OnboardingStep
-          title="What type of firm are you at?"
-          currentStep={1}
-          totalSteps={totalOnboardingSteps}
-          options={firmTypes}
-          selectedValue={state.firmType}
-          onSelect={handleFirmTypeSelect}
-          variant="card"
-        />
-      )}
-
-      {screen === "seniority" && state.firmType && (
-        <OnboardingStep
-          title="What is your seniority level?"
-          currentStep={2}
-          totalSteps={totalOnboardingSteps}
-          options={seniorityOptions[state.firmType] || []}
-          selectedValue={state.seniority}
-          onSelect={handleSenioritySelect}
-          onBack={() => {
-            clearFirmType();
-            setScreen("firmType");
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={screen}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            enter: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+            center: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
+            exit: { duration: 0.2, ease: [0.55, 0.06, 0.68, 0.19] },
           }}
-          variant="card"
-        />
-      )}
+          className="w-full flex flex-col items-center justify-center"
+        >
+          {screen === "firmType" && (
+            <OnboardingStep
+              title="What type of firm are you at?"
+              currentStep={1}
+              totalSteps={totalOnboardingSteps}
+              options={firmTypes}
+              selectedValue={state.firmType}
+              onSelect={handleFirmTypeSelect}
+              variant="card"
+            />
+          )}
 
-      {screen === "usage" && (
-        <OnboardingStep
-          title="How often do you use 9fin?"
-          currentStep={3}
-          totalSteps={totalOnboardingSteps}
-          options={usageOptions}
-          selectedValue={state.usage}
-          onSelect={handleUsageSelect}
-          onBack={() => {
-            clearSeniority();
-            setScreen("seniority");
-          }}
-          variant="card"
-        />
-      )}
+          {screen === "seniority" && state.firmType && (
+            <OnboardingStep
+              title="What is your seniority level?"
+              currentStep={2}
+              totalSteps={totalOnboardingSteps}
+              options={seniorityOptions[state.firmType] || []}
+              selectedValue={state.seniority}
+              onSelect={handleSenioritySelect}
+              onBack={() => {
+                clearFirmType();
+                goBack("firmType");
+              }}
+              variant="card"
+            />
+          )}
 
-      {screen === "features" && (
-        <FeatureExploration
-          features={relevantFeatures}
-          featureFeedback={state.featureFeedback}
-          onFeedback={setFeatureFeedback}
-          onBack={handleFeatureBack}
-        />
-      )}
+          {screen === "usage" && (
+            <OnboardingStep
+              title="How often do you use 9fin?"
+              currentStep={3}
+              totalSteps={totalOnboardingSteps}
+              options={usageOptions}
+              selectedValue={state.usage}
+              onSelect={handleUsageSelect}
+              onBack={() => {
+                clearSeniority();
+                goBack("seniority");
+              }}
+              variant="card"
+            />
+          )}
 
-      {screen === "loading" && (
-        <LoadingInterstitial onComplete={handleLoadingComplete} />
-      )}
+          {screen === "features" && (
+            <FeatureExploration
+              features={relevantFeatures}
+              featureFeedback={state.featureFeedback}
+              onFeedback={setFeatureFeedback}
+              onBack={handleFeatureBack}
+            />
+          )}
 
-      {screen === "report" && report && (
-        <ReportPage report={report} allFeatures={allFeatures} onBackToExplore={handleRestart} />
-      )}
+          {screen === "loading" && (
+            <LoadingInterstitial onComplete={handleLoadingComplete} />
+          )}
 
-      {/* Selection summary pill */}
+          {screen === "report" && report && (
+            <ReportPage report={report} allFeatures={allFeatures} onBackToExplore={handleRestart} />
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Selection summary pill — outside animation */}
       {(screen === "firmType" || screen === "seniority" || screen === "usage") && (
         <SelectionSummary
           state={state}
           onClearFirmType={() => {
             clearFirmType();
-            setScreen("firmType");
+            goBack("firmType");
           }}
           onClearSeniority={() => {
             clearSeniority();
-            setScreen("seniority");
+            goBack("seniority");
           }}
           onClearUsage={() => {
             clearUsage();
-            setScreen("usage");
+            goBack("usage");
           }}
           onClearAll={() => {
             clearAll();
+            setDirection(-1);
             setScreen("firmType");
           }}
         />
