@@ -12,6 +12,8 @@ export interface Feature {
   url: string | null;
   feature_group: string | null;
   sort_order: number;
+  videoSrc?: string;
+  posterSrc?: string;
 }
 
 export const fetchAllFeatures = async (): Promise<Feature[]> => {
