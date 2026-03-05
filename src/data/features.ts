@@ -16,6 +16,37 @@ export interface Feature {
   posterSrc?: string;
 }
 
+const STORAGE_BASE = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/videos`;
+
+const featureVideoMap: Record<string, string> = {
+  "advisor-fees": "advisor_fees_with_opening.mp4",
+  "ai-earnings-transcripts": "ai_earning_calls_video_total.mp4",
+  "bdc-holdings": "bdc_holdings_with_opening.mp4",
+  "bond-loan-covenant-databases": "bonds_and_loans_screener_with_opening.mp4",
+  "clo-databases": "clo_database_with_opening.mp4",
+  "clo-in-market-pipeline": "clo_in_market_with_opening.mp4",
+  "clo-manager-profiles": "clo_manager_with_opening.mp4",
+  "clo-transactions-holdings": "clo_transactions_holdings_with_opening.mp4",
+  "company-profiles": "company_page_quick_with_opening.mp4",
+  "covenant-data": "covenant_data_with_opening.mp4",
+  "covenant-explorer": "covenant_explorer_with_opening.mp4",
+  "covenant-pushback": "covenant_pushback_with_opening.mp4",
+  "deal-predictions": "deal_predictions_with_opening.mp4",
+  "dockets": "dockets_with_opening.mp4",
+  "document-search": "document_search_with_opening.mp4",
+  "ai-database-filters": "filters_no_opening_with_intro.mp4",
+  "lme-data": "lme_data_with_opening.mp4",
+  "market-trends": "market_trends_with_opening.mp4",
+  "new-deal-alerts": "new_deal_alerts_with_opening.mp4",
+  "private-credit-databases": "private_credit_databases_with_opening.mp4",
+  "proprietary-analysis": "proprietary_analysis_with_opening.mp4",
+  "legal-quicktakes": "quick_take_with_opening.mp4",
+  "restructuring-tracker": "restructuring_tracking_with_opening.mp4",
+  "sponsor-profiles": "sponsor_page_with_opening.mp4",
+  "ai-company-tear-sheets": "tear_sheets_with_opening.mp4",
+  "third-party-news": "third_party_news_with_opening.mp4",
+};
+
 export const fetchAllFeatures = async (): Promise<Feature[]> => {
   const { data, error } = await supabase
     .from("features")
@@ -26,7 +57,15 @@ export const fetchAllFeatures = async (): Promise<Feature[]> => {
     console.error("Failed to fetch features:", error);
     return [];
   }
-  return data as Feature[];
+
+  return (data as Feature[]).map(f => {
+    const videoFile = featureVideoMap[f.id];
+    return {
+      ...f,
+      videoSrc: videoFile ? `${STORAGE_BASE}/${videoFile}` : undefined,
+      posterSrc: f.image_url || undefined,
+    };
+  });
 };
 
 // Matrix: feature_id (with underscores) → firm_type_key → teams[]
@@ -72,14 +111,12 @@ const firmTypeKeyMap: Record<string, string> = {
 export const getFeaturesForFirmType = (firmType: string, allFeatures: Feature[]): Feature[] => {
   const key = firmTypeKeyMap[firmType] || "markets";
 
-  // Score each feature by number of relevant teams for this firm type
   const scored = allFeatures.map(f => {
     const relevance = featureRelevanceMatrix[f.id];
     const teamCount = relevance?.[key]?.length || 0;
     return { feature: f, teamCount };
   });
 
-  // Filter to features with at least 1 relevant team, sort descending, take top 5
   return scored
     .filter(s => s.teamCount > 0)
     .sort((a, b) => b.teamCount - a.teamCount)
