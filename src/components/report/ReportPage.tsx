@@ -46,6 +46,16 @@ export const ReportPage = ({ report, allFeatures, onBackToExplore }: ReportPageP
       </div>
 
       <div className="max-w-5xl mx-auto px-6 md:px-8 py-8 space-y-6">
+        {/* Brand header — in document flow, scrolls with content */}
+        <div className="text-center mb-2">
+          <p className="text-sm font-semibold tracking-[0.2em] uppercase text-muted-foreground/70">
+            9fin Platform Advantage
+          </p>
+          <p className="text-[11px] tracking-wide text-muted-foreground/40 mt-0.5">
+            Personalised workflow recommendations
+          </p>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">

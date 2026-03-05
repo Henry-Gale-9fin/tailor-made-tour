@@ -158,14 +158,16 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       {/* Brand header — fixed, centered, outside animated subtree */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 text-center pointer-events-none select-none">
-        <h1 className="text-sm font-semibold tracking-[0.2em] uppercase text-muted-foreground/70">
-          9fin Platform Advantage
-        </h1>
-        <p className="text-[11px] tracking-wide text-muted-foreground/40 mt-0.5">
-          Personalised workflow recommendations
-        </p>
-      </div>
+      {screen !== "report" && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 text-center pointer-events-none select-none">
+          <h1 className="text-sm font-semibold tracking-[0.2em] uppercase text-muted-foreground/70">
+            9fin Platform Advantage
+          </h1>
+          <p className="text-[11px] tracking-wide text-muted-foreground/40 mt-0.5">
+            Personalised workflow recommendations
+          </p>
+        </div>
+      )}
 
       {/* Fixed chrome — OUTSIDE AnimatePresence, never inside a transform parent */}
       {backHandler && screen !== "loading" && screen !== "report" && (
