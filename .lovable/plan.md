@@ -1,20 +1,18 @@
 
 
-## Problem
+## Plan: Fix Animated Background by Applying to `body` Instead of `#root`
 
-Line 54: `<div className="h-screen overflow-hidden relative px-6">` — this clips the animated card at the viewport edge, creating a visible hard line as the card slides out.
-
-## Fix
-
-Remove `overflow-hidden` from the outer wrapper (line 54). Instead, apply `overflow-x: hidden` on the `<body>` or `<html>` element via CSS (`src/index.css`) to prevent horizontal scrollbars without creating a visible clip boundary right at the content edge.
+### Root Cause
+The current CSS applies the animated background to `.dark #root` using pseudo-elements. This doesn't work because `#root` has `overflow: hidden` which clips the pseudo-elements positioned with `inset: -25%`, and the `.dark` class dependency adds complexity. The user's working version applies everything directly to `body` using CSS custom properties and `position: fixed` pseudo-elements — a simpler, proven approach.
 
 ### Changes
 
-**1. `src/components/features/FeatureExploration.tsx` (line 54)**
-- Change `className="h-screen overflow-hidden relative px-6"` → `className="h-screen relative px-6"`
+**`src/index.css`** — Replace the current `@layer base` block and keyframes with the user's working version:
+- Add aurora CSS custom properties (`--bg-base`, `--bg-mid`, `--blob-1`, `--blob-2`, `--blob-3`) to both `:root` and `.dark`
+- Move animated background from `.dark #root` / `.dark #root::before/after` to `body` / `body::before` / `body::after`
+- Use `position: fixed` and `z-index: -1` on pseudo-elements (works with scrolling, no overflow clipping)
+- Remove all `.dark #root` related background rules
+- Update `@media (prefers-reduced-motion)` to target `body` pseudo-elements
 
-**2. `src/index.css`**
-- Add `overflow-x: hidden` to `html` or `body` so the 160px slide doesn't cause a horizontal scrollbar, but the clip happens at the actual screen edge (invisible) rather than at the content container edge (visible).
-
-This way the card fades to opacity 0 while sliding, and any remaining visibility at the edges is clipped by the full-width viewport — not by a narrower padded container with `px-6` inset.
+**`src/pages/Index.tsx`** — Keep the existing `useEffect` that adds `dark` class to `<html>` (still needed for dark mode CSS variables).
 
