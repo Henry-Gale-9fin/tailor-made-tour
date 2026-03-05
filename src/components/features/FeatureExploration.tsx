@@ -87,35 +87,22 @@ export const FeatureExploration = ({
 
                   {/* Feedback Buttons */}
                   <div className="flex justify-center gap-4 mt-8">
-                    <button
-                      onClick={() => handleFeedback("Used")}
-                      className="w-32 py-4 rounded-xl font-semibold
-                                 border-2 border-success/30 bg-success/5 text-success
-                                 hover:border-success hover:bg-success/10 hover:scale-105
-                                 active:scale-95 transition-all duration-200"
-                    >
-                      Used
-                    </button>
-
-                    <button
-                      onClick={() => handleFeedback("Seen")}
-                      className="w-32 py-4 rounded-xl font-semibold
-                                 border-2 border-primary/30 bg-primary/5 text-primary
-                                 hover:border-primary hover:bg-primary/10 hover:scale-105
-                                 active:scale-95 transition-all duration-200"
-                    >
-                      Seen
-                    </button>
-
-                    <button
-                      onClick={() => handleFeedback("Unknown")}
-                      className="w-32 py-4 rounded-xl font-semibold
-                                 border-2 border-muted-foreground/30 bg-muted/20 text-muted-foreground
-                                 hover:border-muted-foreground hover:bg-muted/40 hover:scale-105
-                                 active:scale-95 transition-all duration-200"
-                    >
-                      Unknown
-                    </button>
+                    {([
+                      { label: "Never", feedback: "Unknown" as const },
+                      { label: "Tried", feedback: "Seen" as const },
+                      { label: "Use", feedback: "Used" as const },
+                    ]).map(({ label, feedback }) => (
+                      <button
+                        key={feedback}
+                        onClick={() => handleFeedback(feedback)}
+                        className="w-32 py-4 rounded-2xl font-semibold text-sm tracking-wide
+                                   border border-white/10 bg-white/5 backdrop-blur-md text-foreground/80
+                                   hover:bg-white/10 hover:border-white/20 hover:text-foreground hover:scale-105
+                                   active:scale-95 transition-all duration-200"
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
                 </motion.div>
               </AnimatePresence>
