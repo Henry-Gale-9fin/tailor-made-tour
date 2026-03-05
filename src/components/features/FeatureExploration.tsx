@@ -37,53 +37,53 @@ export const FeatureExploration = ({
 
   const shuffleVariants = {
     enter: {
-      x: reducedMotion ? 0 : 120,
+      x: reducedMotion ? 0 : 80,
+      rotateZ: reducedMotion ? 0 : 2,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.97,
+      scale: reducedMotion ? 1 : 0.99,
     },
     center: {
       x: 0,
+      rotateZ: 0,
       opacity: 1,
       scale: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -120,
+      x: reducedMotion ? 0 : -80,
+      rotateZ: reducedMotion ? 0 : -2,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.97,
+      scale: reducedMotion ? 1 : 0.99,
     },
   };
 
   return (
     <div className="h-screen overflow-hidden relative px-6">
+      {/* Fixed edge vignette overlays — pointer-events-none, NOT a clipping container */}
+      <div className="pointer-events-none fixed inset-y-0 left-0 w-16 z-10"
+        style={{ background: 'linear-gradient(to right, hsl(var(--background)), transparent)' }} />
+      <div className="pointer-events-none fixed inset-y-0 right-0 w-16 z-10"
+        style={{ background: 'linear-gradient(to left, hsl(var(--background)), transparent)' }} />
+
       <div className="h-full flex flex-col items-center justify-center pt-16 pb-6">
         {/* Page title — stationary */}
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
 
         <div className="w-full max-w-5xl">
-          {/* Outer wrapper: holds border/ring visuals */}
-          <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
-            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
-
-            {/* Inner clipping viewport: no border, soft edge fade */}
-            <div
-              className="relative overflow-hidden rounded-3xl"
-              style={{
-                minHeight: '380px',
-                WebkitMaskImage: 'linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)',
-                maskImage: 'linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)',
-              }}
+          {/* Animated glass panel — the entire thing moves */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              variants={shuffleVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.34, ease: [0.25, 0.46, 0.45, 0.94] }}
+              style={{ transformOrigin: 'center center' }}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  variants={shuffleVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className="relative p-6 md:p-10"
-                  style={{ minHeight: '380px' }}
-                >
+              <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
+                <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+
+                <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
                   {/* Radial glow */}
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
@@ -91,10 +91,10 @@ export const FeatureExploration = ({
                   <div className="relative w-full">
                     <FeatureCard feature={currentFeature} />
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
           {/* Divider */}
           <div className="flex justify-center mt-5 mb-4">
