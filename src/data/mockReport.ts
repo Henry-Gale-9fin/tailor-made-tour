@@ -121,7 +121,7 @@ export const generateReport = (
     blindSpots.push("Infrequent usage may limit feature familiarity");
   }
   if (blindSpots.length === 0) {
-    blindSpots.push("Minor optimization opportunities in advanced features");
+    blindSpots.push("Minor optimisation opportunities in advanced features");
   }
 
   // Generate recommendations (prioritize Unknown, then Seen features)
@@ -162,7 +162,7 @@ export const generateReport = (
 
   return {
     header: {
-      title: "Your Personalized Platform Report",
+      title: "Your Personalised Platform Report",
       subtitle: `${firmType || "Professional"} • ${seniority || "Team Member"} • ${frequency || "Regular"} User`,
     },
     score,
