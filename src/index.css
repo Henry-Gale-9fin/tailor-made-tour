@@ -118,6 +118,10 @@ All colors MUST be HSL.
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+  }
+
+  html {
+    overflow-x: hidden;
 
     /* Dark base + vignette + subtle spotlight */
     background:

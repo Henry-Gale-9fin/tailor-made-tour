@@ -51,7 +51,7 @@ export const FeatureExploration = ({
   };
 
   return (
-    <div className="h-screen overflow-hidden relative px-6">
+    <div className="h-screen relative px-6">
       <div className="h-full flex flex-col items-center justify-center pt-16 pb-6">
         {/* Page title — stationary */}
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
