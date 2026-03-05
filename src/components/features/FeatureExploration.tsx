@@ -55,22 +55,16 @@ export const FeatureExploration = ({
 
   return (
     <div className="h-screen overflow-hidden relative px-6">
-      {/* Centered glass panel */}
-      <div className="h-full flex items-center justify-center pt-16 pb-6">
+      <div className="h-full flex flex-col items-center justify-center pt-16 pb-6">
+        {/* Page title — outside the glass panel */}
+        <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
+
         <div className="w-full max-w-5xl">
+          {/* Glass panel — feature content only */}
           <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
             <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
 
             <div className="relative p-6 md:p-10">
-              {/* Title */}
-              <div className="text-center mb-8">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
-                <p className="text-muted-foreground">
-                  How familiar are you with this feature?
-                </p>
-              </div>
-
-              {/* Animated Feature Card + Buttons */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
@@ -81,36 +75,41 @@ export const FeatureExploration = ({
                   transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   {/* Feature Card with radial glow */}
-                  <div className="relative flex justify-center px-4">
+                  <div className="relative flex justify-center">
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                      <div className="w-[70%] h-[80%] rounded-full bg-primary/8 blur-3xl" />
+                      <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
                     </div>
-                    <div className="relative">
+                    <div className="relative w-full">
                       <FeatureCard feature={currentFeature} />
                     </div>
                   </div>
-
-                  {/* Feedback Buttons */}
-                  <div className="flex justify-center gap-4 mt-8">
-                    {([
-                      { label: "Never", feedback: "Unknown" as const },
-                      { label: "Tried", feedback: "Seen" as const },
-                      { label: "Use", feedback: "Used" as const },
-                    ]).map(({ label, feedback }) => (
-                      <button
-                        key={feedback}
-                        onClick={() => handleFeedback(feedback)}
-                        className="w-32 py-4 rounded-2xl font-semibold text-sm tracking-wide
-                                   border border-white/15 bg-white/10 backdrop-blur-md text-foreground/90
-                                   hover:bg-white/15 hover:border-white/25 hover:text-foreground hover:scale-105
-                                   active:scale-95 transition-all duration-200"
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
                 </motion.div>
               </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Question + Buttons — below the glass panel */}
+          <div className="mt-6 text-center">
+            <p className="text-muted-foreground text-sm mb-4">
+              How familiar are you with this feature?
+            </p>
+            <div className="flex justify-center gap-4">
+              {([
+                { label: "Never", feedback: "Unknown" as const },
+                { label: "Tried", feedback: "Seen" as const },
+                { label: "Use", feedback: "Used" as const },
+              ]).map(({ label, feedback }) => (
+                <button
+                  key={feedback}
+                  onClick={() => handleFeedback(feedback)}
+                  className="w-32 py-3.5 rounded-2xl font-semibold text-sm tracking-wide
+                             border border-white/15 bg-white/10 backdrop-blur-md text-foreground/90
+                             hover:bg-white/20 hover:border-white/30 hover:text-foreground hover:scale-105
+                             active:scale-95 transition-all duration-200"
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

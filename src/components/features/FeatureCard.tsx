@@ -10,7 +10,7 @@ interface FeatureCardProps {
 export const FeatureCard = ({ feature }: FeatureCardProps) => {
   return (
     <Card 
-      className="w-full max-w-6xl mx-auto border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden"
+      className="w-full max-w-6xl mx-auto border-white/15 bg-card/80 backdrop-blur-sm overflow-hidden shadow-lg shadow-black/20 ring-1 ring-white/5"
       style={{ maxHeight: '80vh' }}
     >
       <div className="p-6">
