@@ -10,6 +10,10 @@ interface FeatureExplorationProps {
   onBack: () => void;
 }
 
+const GlassShell = ({ className = "" }: { className?: string }) => (
+  <div className={`absolute inset-0 rounded-3xl border border-white/10 bg-white/5 ring-1 ring-white/5 ${className}`} />
+);
+
 export const FeatureExploration = ({
   features,
   featureFeedback,
@@ -19,6 +23,7 @@ export const FeatureExploration = ({
   const reducedMotion = useReducedMotion();
 
   const currentFeature = features[currentIndex];
+  const remaining = features.length - currentIndex - 1;
 
   if (!currentFeature) {
     return (
@@ -38,11 +43,13 @@ export const FeatureExploration = ({
   const shuffleVariants = {
     enter: {
       x: reducedMotion ? 0 : 120,
+      y: reducedMotion ? 0 : 8,
       opacity: 0,
       scale: reducedMotion ? 1 : 0.97,
     },
     center: {
       x: 0,
+      y: 0,
       opacity: 1,
       scale: 1,
     },
@@ -60,31 +67,53 @@ export const FeatureExploration = ({
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
 
         <div className="w-full max-w-5xl">
-          {/* Animated glass panel + card as one unit */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              variants={shuffleVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
-                <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+          {/* Card stack area */}
+          <div className="relative">
+            {/* Stacked depth layers — stationary behind the active card */}
+            {remaining >= 2 && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{ transform: 'translateY(16px) scale(0.96)', transformOrigin: 'center top' }}
+              >
+                <GlassShell className="opacity-15 shadow-lg" />
+              </div>
+            )}
+            {remaining >= 1 && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{ transform: 'translateY(8px) scale(0.98)', transformOrigin: 'center top' }}
+              >
+                <GlassShell className="opacity-25 shadow-xl" />
+              </div>
+            )}
 
-                <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
-                  {/* Radial glow */}
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
-                  </div>
-                  <div className="relative w-full">
-                    <FeatureCard feature={currentFeature} />
+            {/* Active card — animated */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                variants={shuffleVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="relative"
+              >
+                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
+                  <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+
+                  <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
+                    {/* Radial glow */}
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
+                    </div>
+                    <div className="relative w-full">
+                      <FeatureCard feature={currentFeature} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
           {/* Divider */}
           <div className="flex justify-center mt-5 mb-4">
