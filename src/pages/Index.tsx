@@ -5,10 +5,13 @@ import { SelectionSummary } from "@/components/onboarding/SelectionSummary";
 import { FeatureExploration } from "@/components/features/FeatureExploration";
 import { LoadingInterstitial } from "@/components/features/LoadingInterstitial";
 import { ReportPage } from "@/components/report/ReportPage";
+import { StepIndicator } from "@/components/onboarding/StepIndicator";
 import { firmTypes, seniorityOptions, usageOptions } from "@/data/onboardingOptions";
 import { fetchAllFeatures, getFeaturesForFirmType, Feature } from "@/data/features";
 import { generateReport, ReportData } from "@/data/mockReport";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Screen = "firmType" | "seniority" | "usage" | "features" | "loading" | "report";
 
@@ -134,8 +137,55 @@ const Index = () => {
     }),
   };
 
+  // Determine which onboarding step we're on (for progress indicator)
+  const isOnboarding = screen === "firmType" || screen === "seniority" || screen === "usage";
+  const currentStepNum = screen === "firmType" ? 1 : screen === "seniority" ? 2 : 3;
+
+  // Determine if back button should show and its handler
+  const getBackHandler = () => {
+    if (screen === "seniority") return () => { clearFirmType(); goBack("firmType"); };
+    if (screen === "usage") return () => { clearSeniority(); goBack("seniority"); };
+    if (screen === "features") return handleFeatureBack;
+    return null;
+  };
+  const backHandler = getBackHandler();
+
+  // Feature review count for progress display
+  const reviewedCount = Object.keys(state.featureFeedback).filter(id =>
+    relevantFeatures.some(f => f.id === id)
+  ).length;
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
+      {/* Fixed chrome — OUTSIDE AnimatePresence, never inside a transform parent */}
+      {backHandler && screen !== "loading" && screen !== "report" && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={backHandler}
+          className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-50"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      )}
+
+      {isOnboarding && (
+        <div className="fixed top-6 right-6 flex items-center gap-3 z-50">
+          <span className="text-sm text-muted-foreground">
+            Step {currentStepNum} of {totalOnboardingSteps}
+          </span>
+          <StepIndicator currentStep={currentStepNum} totalSteps={totalOnboardingSteps} />
+        </div>
+      )}
+
+      {screen === "features" && (
+        <div className="fixed top-6 right-6 text-sm text-muted-foreground z-50">
+          {reviewedCount} of {relevantFeatures.length} features reviewed
+        </div>
+      )}
+
+      {/* Animated content area */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={screen}
@@ -167,10 +217,6 @@ const Index = () => {
               options={seniorityOptions[state.firmType] || []}
               selectedValue={state.seniority}
               onSelect={handleSenioritySelect}
-              onBack={() => {
-                clearFirmType();
-                goBack("firmType");
-              }}
               variant="card"
             />
           )}
@@ -183,10 +229,6 @@ const Index = () => {
               options={usageOptions}
               selectedValue={state.usage}
               onSelect={handleUsageSelect}
-              onBack={() => {
-                clearSeniority();
-                goBack("seniority");
-              }}
               variant="card"
             />
           )}
@@ -211,7 +253,7 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Selection summary pill — outside animation */}
-      {(screen === "firmType" || screen === "seniority" || screen === "usage") && (
+      {isOnboarding && (
         <SelectionSummary
           state={state}
           onClearFirmType={() => {

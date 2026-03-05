@@ -1,6 +1,3 @@
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { StepIndicator } from "./StepIndicator";
 import { SelectionChip } from "./SelectionChip";
 import { LucideIcon } from "lucide-react";
 
@@ -17,37 +14,13 @@ interface OnboardingStepProps {
 
 export const OnboardingStep = ({
   title,
-  currentStep,
-  totalSteps,
   options,
   selectedValue,
   onSelect,
-  onBack,
   variant = "default",
 }: OnboardingStepProps) => {
   return (
     <div className="relative w-full pt-24 px-6">
-      {/* Back Button (top-left of screen) */}
-      {onBack && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-20"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
-      )}
-
-      {/* Progress Indicator (top-right of screen) */}
-      <div className="fixed top-6 right-6 flex items-center gap-3 z-20">
-        <span className="text-sm text-muted-foreground">
-          Step {currentStep} of {totalSteps}
-        </span>
-        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
-      </div>
-
       {/* Card Wrapper */}
       <div
         className={
