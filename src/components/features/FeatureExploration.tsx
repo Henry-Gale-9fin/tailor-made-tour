@@ -44,16 +44,19 @@ export const FeatureExploration = ({
 
   const cardVariants = {
     enter: {
-      x: reducedMotion ? 0 : 30,
+      x: reducedMotion ? 0 : 16,
       opacity: 0,
+      scale: reducedMotion ? 1 : 0.99,
     },
     center: {
       x: 0,
       opacity: 1,
+      scale: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -30,
+      x: reducedMotion ? 0 : -12,
       opacity: 0,
+      scale: reducedMotion ? 1 : 0.99,
     },
   };
 
