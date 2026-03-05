@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Feature } from "@/data/features";
 import { FeatureCard } from "./FeatureCard";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -16,14 +14,9 @@ export const FeatureExploration = ({
   features,
   featureFeedback,
   onFeedback,
-  onBack,
 }: FeatureExplorationProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reducedMotion = useReducedMotion();
-
-  const reviewedCount = Object.keys(featureFeedback).filter(id =>
-    features.some(f => f.id === id)
-  ).length;
 
   const currentFeature = features[currentIndex];
 
@@ -62,22 +55,6 @@ export const FeatureExploration = ({
 
   return (
     <div className="h-screen overflow-hidden relative px-6">
-      {/* Fixed Top-Left Back Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="fixed top-6 left-6 text-muted-foreground hover:text-foreground z-50"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back
-      </Button>
-
-      {/* Fixed Top-Right Progress */}
-      <div className="fixed top-6 right-6 text-sm text-muted-foreground z-50">
-        {reviewedCount} of {features.length} features reviewed
-      </div>
-
       {/* Centered glass panel */}
       <div className="h-full flex items-center justify-center pt-16 pb-6">
         <div className="w-full max-w-5xl">
