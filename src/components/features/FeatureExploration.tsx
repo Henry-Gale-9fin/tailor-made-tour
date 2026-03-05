@@ -35,70 +35,63 @@ export const FeatureExploration = ({
     }
   };
 
-  const deckVariants = {
+  const shuffleVariants = {
     enter: {
-      x: reducedMotion ? 0 : 80,
-      rotateZ: reducedMotion ? 0 : 2,
+      x: reducedMotion ? 0 : 120,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.99,
+      scale: reducedMotion ? 1 : 0.97,
     },
     center: {
       x: 0,
-      rotateZ: 0,
       opacity: 1,
       scale: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -80,
-      rotateZ: reducedMotion ? 0 : -2,
+      x: reducedMotion ? 0 : -120,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.99,
+      scale: reducedMotion ? 1 : 0.97,
     },
   };
 
   return (
     <div className="h-screen overflow-hidden relative px-6">
       <div className="h-full flex flex-col items-center justify-center pt-16 pb-6">
-        {/* Page title — outside the glass panel, stationary */}
+        {/* Page title — stationary */}
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
 
         <div className="w-full max-w-5xl">
-          {/* Static glass frame */}
-          <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
-            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
+          {/* Animated glass panel + card as one unit */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              variants={shuffleVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
+                <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
 
-            {/* Fixed-height inner container to prevent layout shifts */}
-            <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  variants={deckVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.34, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  style={{ transformOrigin: 'center bottom' }}
-                >
-                  {/* Radial glow behind card */}
-                  <div className="relative flex justify-center">
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                      <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
-                    </div>
-                    <div className="relative w-full">
-                      <FeatureCard feature={currentFeature} />
-                    </div>
+                <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
+                  {/* Radial glow */}
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
+                  <div className="relative w-full">
+                    <FeatureCard feature={currentFeature} />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-          {/* Divider — subtle gradient fade */}
+          {/* Divider */}
           <div className="flex justify-center mt-5 mb-4">
             <div className="w-48 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
           </div>
 
-          {/* Controls — stationary, outside AnimatePresence */}
+          {/* Controls — stationary */}
           <div className="text-center">
             <p className="text-foreground/70 text-sm font-medium mb-4">
               How familiar are you with this feature?
