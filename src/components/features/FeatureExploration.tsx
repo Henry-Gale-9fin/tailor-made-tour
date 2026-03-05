@@ -35,19 +35,22 @@ export const FeatureExploration = ({
     }
   };
 
-  const cardVariants = {
+  const deckVariants = {
     enter: {
-      x: reducedMotion ? 0 : 16,
+      x: reducedMotion ? 0 : 80,
+      rotateZ: reducedMotion ? 0 : 2,
       opacity: 0,
       scale: reducedMotion ? 1 : 0.99,
     },
     center: {
       x: 0,
+      rotateZ: 0,
       opacity: 1,
       scale: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -12,
+      x: reducedMotion ? 0 : -80,
+      rotateZ: reducedMotion ? 0 : -2,
       opacity: 0,
       scale: reducedMotion ? 1 : 0.99,
     },
@@ -56,25 +59,27 @@ export const FeatureExploration = ({
   return (
     <div className="h-screen overflow-hidden relative px-6">
       <div className="h-full flex flex-col items-center justify-center pt-16 pb-6">
-        {/* Page title — outside the glass panel */}
+        {/* Page title — outside the glass panel, stationary */}
         <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Explore Features</h1>
 
         <div className="w-full max-w-5xl">
-          {/* Glass panel — feature content only */}
+          {/* Static glass frame */}
           <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
             <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
 
-            <div className="relative p-6 md:p-10">
+            {/* Fixed-height inner container to prevent layout shifts */}
+            <div className="relative p-6 md:p-10" style={{ minHeight: '380px' }}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
-                  variants={cardVariants}
+                  variants={deckVariants}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{ duration: 0.34, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  style={{ transformOrigin: 'center bottom' }}
                 >
-                  {/* Feature Card with radial glow */}
+                  {/* Radial glow behind card */}
                   <div className="relative flex justify-center">
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div className="w-[60%] h-[70%] rounded-full bg-primary/6 blur-3xl" />
@@ -88,9 +93,14 @@ export const FeatureExploration = ({
             </div>
           </div>
 
-          {/* Question + Buttons — below the glass panel */}
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground text-sm mb-4">
+          {/* Divider — subtle gradient fade */}
+          <div className="flex justify-center mt-5 mb-4">
+            <div className="w-48 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+          </div>
+
+          {/* Controls — stationary, outside AnimatePresence */}
+          <div className="text-center">
+            <p className="text-foreground/70 text-sm font-medium mb-4">
               How familiar are you with this feature?
             </p>
             <div className="flex justify-center gap-4">
