@@ -37,7 +37,7 @@ export const FeatureExploration = ({
 
   const slideVariants = {
     enter: {
-      x: reducedMotion ? 0 : 40,
+      x: reducedMotion ? 0 : 160,
       opacity: 0,
     },
     center: {
@@ -45,7 +45,7 @@ export const FeatureExploration = ({
       opacity: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -40,
+      x: reducedMotion ? 0 : -160,
       opacity: 0,
     },
   };
@@ -64,7 +64,7 @@ export const FeatureExploration = ({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.42, ease: [0.25, 0.46, 0.45, 0.94], opacity: { duration: 0.38, ease: "easeIn" } }}
             >
               <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl ring-1 ring-white/5">
                 <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/10 to-transparent opacity-60" />
