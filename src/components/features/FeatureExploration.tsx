@@ -37,7 +37,7 @@ export const FeatureExploration = ({
 
   const slideVariants = {
     enter: {
-      x: reducedMotion ? 0 : 40,
+      x: reducedMotion ? 0 : 160,
       opacity: 0,
     },
     center: {
@@ -45,7 +45,7 @@ export const FeatureExploration = ({
       opacity: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -40,
+      x: reducedMotion ? 0 : -160,
       opacity: 0,
     },
   };
