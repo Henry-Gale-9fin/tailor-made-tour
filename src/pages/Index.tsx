@@ -144,11 +144,7 @@ const Index = () => {
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{
-            enter: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
-            center: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
-            exit: { duration: 0.2, ease: [0.55, 0.06, 0.68, 0.19] },
-          }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="w-full flex flex-col items-center justify-center"
         >
           {screen === "firmType" && (
