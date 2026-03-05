@@ -20,7 +20,7 @@ export const CompletionScreen = ({ onRestart }: CompletionScreenProps) => {
         </h1>
         <p className="text-muted-foreground mb-8">
           Your preferences have been saved. We'll use this information to
-          personalize your experience.
+          personalise your experience.
         </p>
 
         <Button onClick={onRestart} variant="outline" size="lg">

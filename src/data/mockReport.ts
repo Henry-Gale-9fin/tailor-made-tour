@@ -162,7 +162,7 @@ export const generateReport = (
 
   return {
     header: {
-      title: "Your Personalized Platform Report",
+      title: "Your Personalised Platform Report",
       subtitle: `${firmType || "Professional"} • ${seniority || "Team Member"} • ${frequency || "Regular"} User`,
     },
     score,
