@@ -44,16 +44,19 @@ export const FeatureExploration = ({
 
   const cardVariants = {
     enter: {
-      x: reducedMotion ? 0 : 30,
+      x: reducedMotion ? 0 : 16,
       opacity: 0,
+      scale: reducedMotion ? 1 : 0.99,
     },
     center: {
       x: 0,
       opacity: 1,
+      scale: 1,
     },
     exit: {
-      x: reducedMotion ? 0 : -30,
+      x: reducedMotion ? 0 : -12,
       opacity: 0,
+      scale: reducedMotion ? 1 : 0.99,
     },
   };
 
@@ -98,7 +101,7 @@ export const FeatureExploration = ({
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   {/* Feature Card */}
                   <div className="flex justify-center px-4">
