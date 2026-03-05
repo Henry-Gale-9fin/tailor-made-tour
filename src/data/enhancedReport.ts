@@ -165,9 +165,6 @@ export const generateReport = (
   );
 };
 
-// Export for backward compatibility
-export { getMaturityLevel } from "./enhancedLogic";
-
 function getMaturityLevel(usedCount: number, seenCount: number, frequency: string | null): MaturityLevel {
   const profile: UserProfile = {
     firmType: "Professional",

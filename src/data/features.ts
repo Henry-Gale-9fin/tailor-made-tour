@@ -58,7 +58,9 @@ export const fetchAllFeatures = async (): Promise<Feature[]> => {
     return [];
   }
 
-  return (data as Feature[]).map(f => {
+  const HIDDEN_FEATURES = ["ai-matrix"];
+
+  return (data as Feature[]).filter(f => !HIDDEN_FEATURES.includes(f.id)).map(f => {
     const videoFile = featureVideoMap[f.id];
     return {
       ...f,
