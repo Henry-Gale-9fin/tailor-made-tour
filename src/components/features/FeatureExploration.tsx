@@ -66,7 +66,7 @@ export const FeatureExploration = ({
               <div className="text-center mb-8">
                 <h1 className="text-3xl md:text-4xl font-bold mb-2">Explore Features</h1>
                 <p className="text-muted-foreground">
-                  Which features have you used, seen, or are unknown to you?
+                  How familiar are you with this feature?
                 </p>
               </div>
 
@@ -80,9 +80,14 @@ export const FeatureExploration = ({
                   exit="exit"
                   transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  {/* Feature Card */}
-                  <div className="flex justify-center px-4">
-                    <FeatureCard feature={currentFeature} />
+                  {/* Feature Card with radial glow */}
+                  <div className="relative flex justify-center px-4">
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <div className="w-[70%] h-[80%] rounded-full bg-primary/8 blur-3xl" />
+                    </div>
+                    <div className="relative">
+                      <FeatureCard feature={currentFeature} />
+                    </div>
                   </div>
 
                   {/* Feedback Buttons */}
@@ -96,8 +101,8 @@ export const FeatureExploration = ({
                         key={feedback}
                         onClick={() => handleFeedback(feedback)}
                         className="w-32 py-4 rounded-2xl font-semibold text-sm tracking-wide
-                                   border border-white/10 bg-white/5 backdrop-blur-md text-foreground/80
-                                   hover:bg-white/10 hover:border-white/20 hover:text-foreground hover:scale-105
+                                   border border-white/15 bg-white/10 backdrop-blur-md text-foreground/90
+                                   hover:bg-white/15 hover:border-white/25 hover:text-foreground hover:scale-105
                                    active:scale-95 transition-all duration-200"
                       >
                         {label}
