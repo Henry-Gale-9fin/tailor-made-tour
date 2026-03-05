@@ -177,14 +177,27 @@ export const ReportPage = ({ report, allFeatures, onBackToExplore }: ReportPageP
 
                     {/* Two-column: image + description */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      {/* Image */}
+                      {/* Media */}
                       <div className="bg-muted/30 rounded-xl border border-border/30 overflow-hidden">
-                        <div className="aspect-[4/3]">
-                          <img
-                            src={feature?.image_url || "/placeholder.svg"}
-                            alt={item.title}
-                            className="w-full h-full object-contain"
-                          />
+                        <div className="aspect-video">
+                          {feature?.videoSrc ? (
+                            <video
+                              src={feature.videoSrc}
+                              poster={feature.posterSrc || feature.image_url || undefined}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <img
+                              src={feature?.image_url || "/placeholder.svg"}
+                              alt={item.title}
+                              className="w-full h-full object-contain"
+                            />
+                          )}
                         </div>
                       </div>
 
