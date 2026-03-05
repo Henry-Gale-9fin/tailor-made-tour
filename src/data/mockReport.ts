@@ -116,14 +116,12 @@ export const generateReport = (
 
   // Enhanced score calculation (0-100)
   // NOTE: Scoring based on features SHOWN to user, not all features in system
+  // MAX POSSIBLE: 100 pts (use all shown features + daily frequency)
   
-  // 1. Adoption: Used features (50 points)
-  const adoptionScore = (usedCount / totalFeatures) * 50;
+  // 1. Adoption: Used features (70 points) - THIS IS THE MOST IMPORTANT
+  const adoptionScore = (usedCount / totalFeatures) * 70;
   
-  // 2. Awareness: Seen features (20 points)
-  const awarenessScore = (seenCount / totalFeatures) * 20;
-  
-  // 3. Frequency: Usage consistency - adjusted for seniority (20 points)
+  // 2. Frequency: Usage consistency - adjusted for seniority (20 points)
   let frequencyScore = 0;
   const seniorityLevel = seniority?.toLowerCase() || "";
   const isSenior = seniorityLevel.includes("partner") || 
@@ -146,11 +144,12 @@ export const generateReport = (
       frequency === "Yearly" ? 3 : 0;
   }
   
-  // 4. Depth: Conversion from seen to used (10 points)
+  // 3. Depth: Conversion from seen to used (10 points)
+  // Rewards commitment: if you try features, do you adopt them?
   const conversionRate = (usedCount + seenCount) > 0 ? usedCount / (usedCount + seenCount) : 0;
   const depthScore = conversionRate * 10;
 
-  const score = Math.min(100, Math.round(adoptionScore + awarenessScore + frequencyScore + depthScore));
+  const score = Math.min(100, Math.round(adoptionScore + frequencyScore + depthScore));
 
   // Build a lookup from loaded features
   const featureLookup = new Map(allFeatures.map(f => [f.id, f]));
