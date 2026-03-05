@@ -1,18 +1,38 @@
 
 
-## Plan: Fix Animated Background by Applying to `body` Instead of `#root`
+## Problem
 
-### Root Cause
-The current CSS applies the animated background to `.dark #root` using pseudo-elements. This doesn't work because `#root` has `overflow: hidden` which clips the pseudo-elements positioned with `inset: -25%`, and the `.dark` class dependency adds complexity. The user's working version applies everything directly to `body` using CSS custom properties and `position: fixed` pseudo-elements — a simpler, proven approach.
+The slide animation fades out too quickly (opacity hits 0 before the card has moved far enough off-screen), creating a visible "hard line" where the card abruptly disappears. The 40px travel distance isn't enough room for the fade to look natural.
 
-### Changes
+## Fix
 
-**`src/index.css`** — Replace the current `@layer base` block and keyframes with the user's working version:
-- Add aurora CSS custom properties (`--bg-base`, `--bg-mid`, `--blob-1`, `--blob-2`, `--blob-3`) to both `:root` and `.dark`
-- Move animated background from `.dark #root` / `.dark #root::before/after` to `body` / `body::before` / `body::after`
-- Use `position: fixed` and `z-index: -1` on pseudo-elements (works with scrolling, no overflow clipping)
-- Remove all `.dark #root` related background rules
-- Update `@media (prefers-reduced-motion)` to target `body` pseudo-elements
+Edit `src/components/features/FeatureExploration.tsx` — animation variants and transition only:
 
-**`src/pages/Index.tsx`** — Keep the existing `useEffect` that adds `dark` class to `<html>` (still needed for dark mode CSS variables).
+1. **Increase travel distance** from `40px` / `-40px` to `160px` / `-160px` so the card moves further before fully fading, giving the eye more time to perceive the swipe.
+
+2. **Slow the duration** from `0.3s` to `0.42s` — enough for the fade to feel gradual rather than abrupt.
+
+3. **Stagger opacity** using Framer Motion's `transition` per-property config so `x` and `opacity` don't finish at the same time:
+   - `x`: `0.42s`, easeOut
+   - `opacity`: `0.38s`, easeIn (slightly faster so it fades toward the end of the slide, not at the start)
+
+4. **Add `overflow-hidden` to the page-level wrapper** (`h-screen` div) — it's already there, so no visible clip edge. This just ensures the extra travel distance doesn't cause a horizontal scrollbar.
+
+### Updated variants:
+```ts
+enter: { x: 160, opacity: 0 }
+center: { x: 0, opacity: 1 }
+exit: { x: -160, opacity: 0 }
+```
+
+### Updated transition:
+```ts
+transition={{
+  duration: 0.42,
+  ease: [0.25, 0.46, 0.45, 0.94],
+  opacity: { duration: 0.38, ease: "easeIn" }
+}}
+```
+
+No other files or styling changes needed.
 
