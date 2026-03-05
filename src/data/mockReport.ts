@@ -121,7 +121,7 @@ export const generateReport = (
     blindSpots.push("Infrequent usage may limit feature familiarity");
   }
   if (blindSpots.length === 0) {
-    blindSpots.push("Minor optimization opportunities in advanced features");
+    blindSpots.push("Minor optimisation opportunities in advanced features");
   }
 
   // Generate recommendations (prioritize Unknown, then Seen features)
