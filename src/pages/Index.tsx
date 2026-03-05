@@ -118,9 +118,9 @@ const Index = () => {
 
   const variants = {
     enter: (dir: number) => ({
-      x: reducedMotion ? 0 : dir * 40,
+      x: reducedMotion ? 0 : dir * 16,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.98,
+      scale: reducedMotion ? 1 : 0.99,
     }),
     center: {
       x: 0,
@@ -128,9 +128,9 @@ const Index = () => {
       scale: 1,
     },
     exit: (dir: number) => ({
-      x: reducedMotion ? 0 : dir * -40,
+      x: reducedMotion ? 0 : dir * -12,
       opacity: 0,
-      scale: reducedMotion ? 1 : 0.98,
+      scale: reducedMotion ? 1 : 0.99,
     }),
   };
 
